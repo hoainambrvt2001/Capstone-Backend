@@ -4,7 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { CREDENTIAL_TYPE } from 'src/utils/constants';
+import { CREDENTIAL_TYPE } from '../../src/utils/constants';
 import { ImageSchema } from './common.schema';
 
 export type AccessEventDocument = AccessEvent & Document;

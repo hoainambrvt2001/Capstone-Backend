@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
-import { CREDENTIAL_TYPE } from 'src/utils/constants';
+import { CREDENTIAL_TYPE } from '../../../src/utils/constants';
 
 export class AccessEventDto {
   @IsNotEmpty()

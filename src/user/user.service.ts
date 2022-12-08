@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import {
   User,
   UserDocument,
-} from 'src/schemas/user.schema';
-import { STORE_STATUS } from 'src/utils/constants';
+} from '../../src/schemas/user.schema';
+import { STORE_STATUS } from '../../src/utils/constants';
 import { UserDto, UserUpdateDto } from './dto';
 import * as argon from 'argon2';
 

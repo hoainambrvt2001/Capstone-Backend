@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import {
   AccessEvent,
   AccessEventDocument,
-} from 'src/schemas/access-event.schema';
+} from '../../src/schemas/access-event.schema';
 import {
   AccessEventDto,
   AccessEventUpdateDto,

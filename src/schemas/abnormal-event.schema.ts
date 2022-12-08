@@ -4,7 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { ABNORMAL_EVENT_TYPE } from 'src/utils/constants';
+import { ABNORMAL_EVENT_TYPE } from '../../src/utils/constants';
 import { ImageSchema } from './common.schema';
 
 export type AbnormalEventDocument = AbnormalEvent &

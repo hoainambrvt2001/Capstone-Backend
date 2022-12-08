@@ -8,7 +8,7 @@ import {
   GENDER,
   ROLES,
   STORE_STATUS,
-} from 'src/utils/constants';
+} from '../../src/utils/constants';
 import { ImageSchema } from './common.schema';
 
 export type UserDocument = User & Document;

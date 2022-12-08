@@ -4,11 +4,11 @@ import { Model } from 'mongoose';
 import {
   AbnormalEvent,
   AbnormalEventDocument,
-} from 'src/schemas/abnormal-event.schema';
+} from '../../src/schemas/abnormal-event.schema';
 import {
   Room,
   RoomDocument,
-} from 'src/schemas/room.schema';
+} from '../../src/schemas/room.schema';
 import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,

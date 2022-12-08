@@ -9,7 +9,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { GENDER, STORE_STATUS } from 'src/utils/constants';
+import {
+  GENDER,
+  STORE_STATUS,
+} from '../../../src/utils/constants';
 
 export class UserDto {
   @IsNotEmpty()

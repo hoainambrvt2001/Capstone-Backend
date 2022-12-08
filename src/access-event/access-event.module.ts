@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   AccessEvent,
   AccessEventSchema,
-} from 'src/schemas/access-event.schema';
+} from '../../src/schemas/access-event.schema';
 import { AccessEventController } from './access-event.controller';
 import { AccessEventService } from './access-event.service';
 

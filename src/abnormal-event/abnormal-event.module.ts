@@ -3,8 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   AbnormalEvent,
   AbnormalEventSchema,
-} from 'src/schemas/abnormal-event.schema';
-import { Room, RoomSchema } from 'src/schemas/room.schema';
+} from '../../src/schemas/abnormal-event.schema';
+import {
+  Room,
+  RoomSchema,
+} from '../../src/schemas/room.schema';
 
 import { AbnormalEventController } from './abnormal-event.controller';
 import { AbnormalEventService } from './abnormal-event.service';

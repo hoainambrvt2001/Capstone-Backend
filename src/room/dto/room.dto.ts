@@ -8,7 +8,7 @@ import {
 import {
   ROOM_STATUS,
   ROOM_TYPE,
-} from 'src/utils/constants';
+} from '../../../src/utils/constants';
 
 export class RoomDto {
   @IsNotEmpty()

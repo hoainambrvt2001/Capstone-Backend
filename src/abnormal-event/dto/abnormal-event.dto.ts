@@ -8,7 +8,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ABNORMAL_EVENT_TYPE } from 'src/utils/constants';
+import { ABNORMAL_EVENT_TYPE } from '../../../src/utils/constants';
 
 export class AbnormalEventDto {
   @IsNotEmpty()

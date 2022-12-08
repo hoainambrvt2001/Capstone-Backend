@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import {
   Room,
   RoomDocument,
-} from 'src/schemas/room.schema';
-import { ROOM_STATUS } from 'src/utils/constants';
+} from '../../src/schemas/room.schema';
+import { ROOM_STATUS } from '../../src/utils/constants';
 import { RoomDto, RoomUpdateDto } from './dto';
 
 @Injectable()
