@@ -1,8 +1,15 @@
 {
   "version": 2,
   "env": {
-    "DATABASE_URL": "mongodb+srv://namvo:DSwjGDspr0m6Lh9r@e-commerce.yx9dq1w.mongodb.net/petstore?retryWrites=true&w=majority",
-    "JWT_SECRET": "super-secret"
+    "DATABASE_URL": "mongodb+srv://namvo:qZ8ERea7Vd4Dhcxj@cluster0.ibtpkkm.mongodb.net/maindb?retryWrites=true&w=majority",
+    "JWT_SECRET": "access-control-secret",
+    "FIREBASE_API_KEY": "AIzaSyC-0ivISx5ANuUTlvfgEzybeKv2siwgCao",
+    "FIREBASE_AUTH_DOMAIN": "dacn-ec907.firebaseapp.com",
+    "FIREBASE_DATABASE_URL": "",
+    "FIREBASE_PROJECT_ID": "dacn-ec907",
+    "FIREBASE_STORAGE_BUCKET": "dacn-ec907.appspot.com",
+    "FIREBASE_MESSAGING_SENDER_ID": "1009737711764",
+    "FIREBASE_APP_ID": "1:1009737711764:web:dde8cc0a34c98cdd023481"
   },
   "builds": [
     {
