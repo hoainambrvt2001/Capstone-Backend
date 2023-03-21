@@ -5,19 +5,23 @@ import {
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { ABNORMAL_EVENT_TYPE } from '../../src/utils/constants';
-import { ImageSchema } from './common.schema';
 
-export type AbnormalEventDocument = AbnormalEvent &
-  Document;
+type AbnormalEventDocument = AbnormalEvent & Document;
 
-@Schema({ timestamps: true })
-export class AbnormalEvent {
+@Schema({ timestamps: true, collection: 'abnormal_events' })
+class AbnormalEvent {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Room',
+    ref: 'Organization',
   })
-  room: string;
+  organization_id: string;
+
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  room_id: string;
 
   @Prop({
     required: true,
@@ -28,30 +32,48 @@ export class AbnormalEvent {
       ABNORMAL_EVENT_TYPE.OTHER,
     ],
   })
-  type: string;
+  abnormal_type_id: string;
 
   @Prop({
     required: true,
-    type: [ImageSchema],
+    type: [String],
   })
   images: object[];
-
-  @Prop()
-  note: string;
 
   @Prop({
     required: true,
     type: mongoose.Schema.Types.Date,
     default: Date.now(),
   })
-  time: Date;
+  occurred_time: Date;
 
-  @Prop({
-    required: true,
-    default: false,
-  })
-  is_checked: boolean;
+  @Prop({ type: String })
+  note: string;
 }
 
-export const AbnormalEventSchema =
+const AbnormalEventSchema =
   SchemaFactory.createForClass(AbnormalEvent);
+
+AbnormalEventSchema.virtual('organization', {
+  ref: 'Organization',
+  localField: 'organization_id',
+  foreignField: '_id',
+});
+
+AbnormalEventSchema.virtual('room', {
+  ref: 'Room',
+  localField: 'room_id',
+  foreignField: '_id',
+});
+
+AbnormalEventSchema.virtual('abnormal_type', {
+  ref: 'AbnormalType',
+  localField: 'abnormal_type_id',
+  foreignField: '_id',
+});
+
+export {
+  AbnormalEventDocument,
+  AbnormalEvent,
+  AbnormalEventSchema,
+};

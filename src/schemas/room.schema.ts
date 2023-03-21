@@ -3,40 +3,34 @@ import {
   Schema,
   SchemaFactory,
 } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import {
-  ROOM_STATUS,
-  ROOM_TYPE,
-} from 'src/utils/constants';
+import mongoose, { Document } from 'mongoose';
+import { ROOM_STATUS } from 'src/utils/constants';
 
-export type RoomDocument = Room & Document;
+type RoomDocument = Room & Document;
 
-@Schema({ timestamps: true })
-export class Room {
-  @Prop({ required: true, unique: true })
-  code: string;
+@Schema({ timestamps: true, collection: 'rooms' })
+class Room {
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  organization_id: string;
 
-  @Prop({ required: true })
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  room_type_id: string;
+
+  @Prop({ required: true, type: String })
   name: string;
 
-  @Prop({ required: true })
-  building: string;
-
-  @Prop({ required: true })
-  floor: number;
-
-  @Prop({ required: true })
-  capacity: number;
+  @Prop({ required: true, type: Number })
+  max_occupancy: number;
 
   @Prop({
     required: true,
-    enum: [ROOM_TYPE.PUBLIC, ROOM_TYPE.PRIVATE],
-    default: ROOM_TYPE.PUBLIC,
-  })
-  type: string;
-
-  @Prop({
-    required: true,
+    type: String,
     enum: [
       ROOM_STATUS.AVAIALBE,
       ROOM_STATUS.MAINTENANCE,
@@ -46,9 +40,22 @@ export class Room {
   })
   status: string;
 
-  @Prop()
+  @Prop({ type: String })
   description: string;
 }
 
-export const RoomSchema =
-  SchemaFactory.createForClass(Room);
+const RoomSchema = SchemaFactory.createForClass(Room);
+
+RoomSchema.virtual('organization', {
+  ref: 'Organization',
+  localField: 'organization_id',
+  foreignField: '_id',
+});
+
+RoomSchema.virtual('room_type', {
+  ref: 'RoomType',
+  localField: 'room_type_id',
+  foreignField: '_id',
+});
+
+export { RoomDocument, Room, RoomSchema };

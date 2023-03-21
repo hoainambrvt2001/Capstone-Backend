@@ -1,13 +1,12 @@
-export const ROLES = {
-  ADMIN: '638c5f71700c4c50a7ffc028',
+export const ROLE = {
+  ADMIN: '638c5f1c700c4c50a7ffc01d',
   MANAGER: '638c5f6a700c4c50a7ffc027',
   SUBSCRIBER: '638c5f71700c4c50a7ffc028',
 };
 
-export enum CREDENTIAL_TYPE {
-  APP_QR = 'app-qr',
-  MAIL_QR = 'mail-qr',
-  ADMIN_PERMIT = 'admin-permit',
+export enum ROOM_TYPE {
+  PUBLIC = '6413ebf956917f74591468fb',
+  PRIVATE = '6413ebf956917f74591468fc',
 }
 
 export enum ABNORMAL_EVENT_TYPE {
@@ -29,19 +28,15 @@ export enum STORE_STATUS {
   UNAVAILABLE = 'unavailable',
 }
 
-export enum ROOM_TYPE {
-  PUBLIC = 'public',
-  PRIVATE = 'private',
-}
-
 export enum ROOM_STATUS {
   AVAIALBE = 'available',
   MAINTENANCE = 'maintenance',
   UNAVAILABLE = 'unavailable',
 }
 
-export enum GENDER {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
+export enum REQUEST_ACCESS_STATUS {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DECLINED = 'declined',
+  CANCELED = 'canceled',
 }
