@@ -5,7 +5,10 @@ import {
   AccessEvent,
   AccessEventDocument,
 } from '../../schemas/access-event.schema';
-import { AccessEventDto } from './dto';
+import {
+  AccessEventDto,
+  AccessEventUpdateDto,
+} from './dto';
 
 @Injectable()
 export class AccessEventService {
@@ -91,6 +94,28 @@ export class AccessEventService {
       return {
         status_code: 201,
         data: createdEvent,
+      };
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  async updateEventById(
+    eventId: string,
+    eventDto: AccessEventUpdateDto,
+  ) {
+    try {
+      const updatedEvent = await this.eventModel.updateOne(
+        {
+          _id: eventId,
+        },
+        eventDto,
+      );
+      return {
+        status_code: 201,
+        updated_count: updatedEvent.modifiedCount,
+        data: eventDto,
       };
     } catch (e) {
       console.log(e);
