@@ -34,7 +34,7 @@ class AbnormalEvent {
     required: true,
     type: [String],
   })
-  images: object[];
+  images: string[];
 
   @Prop({
     required: true,

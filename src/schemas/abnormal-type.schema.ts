@@ -11,6 +11,9 @@ type AbnormalTypeDocument = AbnormalType & Document;
 class AbnormalType {
   @Prop({ required: true, type: String })
   name: string;
+
+  @Prop({ type: String })
+  description: string;
 }
 
 const AbnormalTypeSchema =

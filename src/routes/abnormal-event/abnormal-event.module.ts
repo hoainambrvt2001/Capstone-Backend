@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
+  AbnormalType,
+  AbnormalTypeSchema,
+} from 'src/schemas/abnormal-type.schema';
+import {
   AbnormalEvent,
   AbnormalEventSchema,
 } from '../../schemas/abnormal-event.schema';
@@ -13,6 +17,10 @@ import { AbnormalEventService } from './abnormal-event.service';
       {
         name: AbnormalEvent.name,
         schema: AbnormalEventSchema,
+      },
+      {
+        name: AbnormalType.name,
+        schema: AbnormalTypeSchema,
       },
     ]),
   ],

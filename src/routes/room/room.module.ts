@@ -4,6 +4,10 @@ import {
   Room,
   RoomSchema,
 } from '../../schemas/room.schema';
+import {
+  RoomType,
+  RoomTypeSchema,
+} from 'src/schemas/room-type.schema';
 import { RoomService } from './room.service';
 import { RoomController } from './room.controller';
 
@@ -13,6 +17,10 @@ import { RoomController } from './room.controller';
       {
         name: Room.name,
         schema: RoomSchema,
+      },
+      {
+        name: RoomType.name,
+        schema: RoomTypeSchema,
       },
     ]),
   ],
