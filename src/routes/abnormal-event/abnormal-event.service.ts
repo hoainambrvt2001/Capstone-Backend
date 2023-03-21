@@ -41,7 +41,8 @@ export class AbnormalEventService {
       const abnormal_events = await this.eventModel
         .find(filters, null, options)
         .populate('organization', '_id name')
-        .populate('room', '_id name');
+        .populate('room', '_id name')
+        .populate('abnormal_type', 'name');
 
       // Calculate the last page number:
       const total_events = await this.eventModel.count(
@@ -71,7 +72,8 @@ export class AbnormalEventService {
           _id: eventId,
         })
         .populate('organization', '_id name')
-        .populate('room', '_id name');
+        .populate('room', '_id name')
+        .populate('abnormal_type', 'name');
       return {
         status_code: 200,
         data: event,

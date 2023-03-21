@@ -25,12 +25,8 @@ class AbnormalEvent {
 
   @Prop({
     required: true,
-    enum: [
-      ABNORMAL_EVENT_TYPE.STRANGER,
-      ABNORMAL_EVENT_TYPE.OVERCROWD,
-      ABNORMAL_EVENT_TYPE.FIRE,
-      ABNORMAL_EVENT_TYPE.OTHER,
-    ],
+    enum: ABNORMAL_EVENT_TYPE,
+    default: ABNORMAL_EVENT_TYPE.OTHER,
   })
   abnormal_type_id: string;
 

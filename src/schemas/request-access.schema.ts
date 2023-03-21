@@ -35,12 +35,7 @@ class RequestAccess {
   @Prop({
     required: true,
     type: String,
-    enum: [
-      REQUEST_ACCESS_STATUS.PENDING,
-      REQUEST_ACCESS_STATUS.ACCEPTED,
-      REQUEST_ACCESS_STATUS.DECLINED,
-      REQUEST_ACCESS_STATUS.CANCELED,
-    ],
+    enum: REQUEST_ACCESS_STATUS,
     default: REQUEST_ACCESS_STATUS.PENDING,
   })
   status: string;

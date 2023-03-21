@@ -4,7 +4,10 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { ROOM_STATUS } from 'src/utils/constants';
+import {
+  ROOM_STATUS,
+  ROOM_TYPE,
+} from 'src/utils/constants';
 
 type RoomDocument = Room & Document;
 
@@ -19,6 +22,8 @@ class Room {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
+    enum: ROOM_TYPE,
+    default: ROOM_TYPE.PRIVATE,
   })
   room_type_id: string;
 
@@ -31,11 +36,7 @@ class Room {
   @Prop({
     required: true,
     type: String,
-    enum: [
-      ROOM_STATUS.AVAIALBE,
-      ROOM_STATUS.MAINTENANCE,
-      ROOM_STATUS.UNAVAILABLE,
-    ],
+    enum: ROOM_STATUS,
     default: ROOM_STATUS.AVAIALBE,
   })
   status: string;

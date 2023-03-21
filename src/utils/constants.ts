@@ -1,8 +1,8 @@
-export const ROLE = {
-  ADMIN: '638c5f1c700c4c50a7ffc01d',
-  MANAGER: '638c5f6a700c4c50a7ffc027',
-  SUBSCRIBER: '638c5f71700c4c50a7ffc028',
-};
+export enum ROLE {
+  ADMIN = '638c5f1c700c4c50a7ffc01d',
+  MANAGER = '638c5f6a700c4c50a7ffc027',
+  SUBSCRIBER = '638c5f71700c4c50a7ffc028',
+}
 
 export enum ROOM_TYPE {
   PUBLIC = '6413ebf956917f74591468fb',
@@ -10,17 +10,10 @@ export enum ROOM_TYPE {
 }
 
 export enum ABNORMAL_EVENT_TYPE {
-  STRANGER = 'stranger',
-  OVERCROWD = 'overcrowd',
-  FIRE = 'fire',
-  OTHER = 'other',
-}
-
-export enum IMAGE_TYPE {
-  IMAGE = 'image',
-  AVATAR = 'avatar',
-  ACCESS_EVENT = 'access-event',
-  ABNORMAL_EVENT = 'abnormal-event',
+  STRANGER = '64191579e00817dbbf4c6501',
+  OVERCROWD = '64191579e00817dbbf4c6502',
+  FIRE = '64191579e00817dbbf4c6503',
+  OTHER = '64191579e00817dbbf4c6504',
 }
 
 export enum STORE_STATUS {

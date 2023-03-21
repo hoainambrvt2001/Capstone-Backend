@@ -6,7 +6,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ROOM_STATUS } from 'src/utils/constants';
+import {
+  ROOM_STATUS,
+  ROOM_TYPE,
+} from 'src/utils/constants';
 
 export class RoomDto {
   @IsMongoId()
@@ -14,6 +17,7 @@ export class RoomDto {
   organization_id: string;
 
   @IsMongoId()
+  @IsEnum(ROOM_TYPE)
   @IsNotEmpty()
   room_type_id: string;
 
@@ -32,6 +36,7 @@ export class RoomDto {
 
 export class RoomUpdateDto {
   @IsString()
+  @IsEnum(ROOM_TYPE)
   @IsOptional()
   room_type_id: string;
 

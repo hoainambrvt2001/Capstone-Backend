@@ -1,11 +1,13 @@
 import {
   IsArray,
   IsDateString,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { ABNORMAL_EVENT_TYPE } from 'src/utils/constants';
 
 export class AbnormalEventDto {
   @IsMongoId()
@@ -17,6 +19,7 @@ export class AbnormalEventDto {
   room_id: string;
 
   @IsMongoId()
+  @IsEnum(ABNORMAL_EVENT_TYPE)
   @IsNotEmpty()
   abnormal_type_id: string;
 
@@ -43,6 +46,7 @@ export class AbnormalEventUpdateDto {
   room_id: string;
 
   @IsMongoId()
+  @IsEnum(ABNORMAL_EVENT_TYPE)
   @IsOptional()
   abnormal_type_id: string;
 

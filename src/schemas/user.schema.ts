@@ -39,7 +39,7 @@ class User {
 
   @Prop({
     required: true,
-    enum: [STORE_STATUS.AVAIALBE, STORE_STATUS.UNAVAILABLE],
+    enum: STORE_STATUS,
     default: STORE_STATUS.AVAIALBE,
   })
   status: string;
