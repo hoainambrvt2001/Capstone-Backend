@@ -75,11 +75,10 @@ export class RoomService {
       };
 
       // Find rooms
-      const rooms = await this.roomModel.find(
-        filters,
-        null,
-        options,
-      );
+      const rooms = await this.roomModel
+        .find(filters, null, options)
+        .populate('organization', '_id name')
+        .populate('room_type', '_id name');
 
       // Calculate total rooms
       const total_rooms = await this.roomModel.count(
@@ -108,8 +107,8 @@ export class RoomService {
         .findOne({
           _id: roomId,
         })
-        .populate('room_type', '_id name')
-        .populate('organization', '_id name');
+        .populate('organization', '_id name')
+        .populate('room_type', '_id name');
       return {
         status_code: 200,
         data: room,

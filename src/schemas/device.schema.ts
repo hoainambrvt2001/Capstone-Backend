@@ -7,7 +7,12 @@ import mongoose, { Document } from 'mongoose';
 
 type DeviceDocument = Device & Document;
 
-@Schema({ timestamps: true, collection: 'devices' })
+@Schema({
+  timestamps: true,
+  collection: 'devices',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 class Device {
   @Prop({
     required: true,
@@ -40,18 +45,21 @@ DeviceSchema.virtual('organization', {
   ref: 'Organization',
   localField: 'organization_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 DeviceSchema.virtual('room', {
   ref: 'Room',
   localField: 'room_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 DeviceSchema.virtual('device_type', {
   ref: 'DeviceType',
   localField: 'device_type_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export { DeviceDocument, Device, DeviceSchema };

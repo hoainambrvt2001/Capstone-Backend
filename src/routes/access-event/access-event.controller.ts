@@ -49,7 +49,7 @@ export class AccessEventController {
 
   @Post()
   createEvent(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Body() eventDto: AccessEventDto,
   ) {
@@ -60,7 +60,7 @@ export class AccessEventController {
 
   @Patch(':id')
   updateEventById(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') eventId: string,
     @Body() eventDto: AccessEventUpdateDto,
@@ -75,7 +75,7 @@ export class AccessEventController {
 
   @Delete(':id')
   deleteEventById(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') eventId: string,
   ) {

@@ -28,8 +28,8 @@ export class RequestAccessService {
       //** Find requests */
       const requests = await this.requestModel
         .find({}, null, options)
-        .populate('organization')
-        .populate('user');
+        .populate('organization', '_id name')
+        .populate('user', '_id name');
 
       //** Calculate total number of requests */
       const totalRequests = await this.requestModel.count(
@@ -58,8 +58,8 @@ export class RequestAccessService {
         .findOne({
           _id: requestId,
         })
-        .populate('organization')
-        .populate('user');
+        .populate('organization', '_id name')
+        .populate('user', '_id name');
       return {
         status_code: 200,
         data: request,
@@ -76,8 +76,8 @@ export class RequestAccessService {
         .find({
           user_id: uid,
         })
-        .populate('organization')
-        .populate('user');
+        .populate('organization', '_id name')
+        .populate('user', '_id name');
       return {
         status_code: 200,
         data: requests,

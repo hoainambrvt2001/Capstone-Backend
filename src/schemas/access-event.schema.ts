@@ -7,7 +7,12 @@ import mongoose, { Document } from 'mongoose';
 
 type AccessEventDocument = AccessEvent & Document;
 
-@Schema({ timestamps: true, collection: 'access_events' })
+@Schema({
+  timestamps: true,
+  collection: 'access_events',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 class AccessEvent {
   @Prop({
     required: true,
@@ -53,18 +58,21 @@ AccessEventSchema.virtual('room', {
   ref: 'Room',
   localField: 'room_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 AccessEventSchema.virtual('organization', {
   ref: 'Organization',
   localField: 'organization_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 AccessEventSchema.virtual('user', {
   ref: 'User',
   localField: 'user_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export {

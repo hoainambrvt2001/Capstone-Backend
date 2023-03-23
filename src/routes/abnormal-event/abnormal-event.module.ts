@@ -4,6 +4,7 @@ import {
   AbnormalType,
   AbnormalTypeSchema,
 } from 'src/schemas/abnormal-type.schema';
+import { FirebaseService } from 'src/utils/firebase-service';
 import {
   AbnormalEvent,
   AbnormalEventSchema,
@@ -25,6 +26,6 @@ import { AbnormalEventService } from './abnormal-event.service';
     ]),
   ],
   controllers: [AbnormalEventController],
-  providers: [AbnormalEventService],
+  providers: [AbnormalEventService, FirebaseService],
 })
 export class AbnormalEventModule {}

@@ -23,12 +23,8 @@ export class AbnormalEventDto {
   @IsNotEmpty()
   abnormal_type_id: string;
 
-  @IsArray()
-  @IsNotEmpty()
-  images: string[];
-
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   occurred_time: string;
 
   @IsString()
@@ -49,10 +45,6 @@ export class AbnormalEventUpdateDto {
   @IsEnum(ABNORMAL_EVENT_TYPE)
   @IsOptional()
   abnormal_type_id: string;
-
-  @IsArray()
-  @IsOptional()
-  images: string[];
 
   @IsDateString()
   @IsOptional()

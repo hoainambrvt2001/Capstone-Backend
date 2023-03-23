@@ -11,6 +11,8 @@ type RequestAccessDocument = RequestAccess & Document;
 @Schema({
   timestamps: true,
   collection: 'request_accesses',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 })
 class RequestAccess {
   @Prop({
@@ -51,12 +53,14 @@ RequestAccessSchema.virtual('organization', {
   ref: 'Organization',
   localField: 'organization_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 RequestAccessSchema.virtual('user', {
   ref: 'User',
   localField: 'user_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export {

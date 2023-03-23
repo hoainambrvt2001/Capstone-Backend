@@ -8,7 +8,12 @@ import { STORE_STATUS } from '../../src/utils/constants';
 
 type UserDocument = User & Document;
 
-@Schema({ timestamps: true, collection: 'users' })
+@Schema({
+  timestamps: true,
+  collection: 'users',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 class User {
   @Prop({ required: true, unique: true, type: String })
   email: string;
@@ -51,6 +56,7 @@ UserSchema.virtual('role', {
   ref: 'Role',
   localField: 'role_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export { UserDocument, User, UserSchema };

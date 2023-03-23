@@ -12,7 +12,6 @@ import { RoleModule } from './routes/role/role.module';
 import { RequestAccessModule } from './routes/request-access/request-access.module';
 import { OrganizationModule } from './routes/organization/organization.module';
 import { RoomModule } from './routes/room/room.module';
-import { RoomTypeModule } from './routes/room-type/room-type.module';
 
 const config: ConfigService = new ConfigService();
 
@@ -30,7 +29,6 @@ const config: ConfigService = new ConfigService();
     RequestAccessModule,
     OrganizationModule,
     RoomModule,
-    RoomTypeModule,
   ],
 })
 export class AppModule {}

@@ -8,12 +8,16 @@ import { ABNORMAL_EVENT_TYPE } from '../../src/utils/constants';
 
 type AbnormalEventDocument = AbnormalEvent & Document;
 
-@Schema({ timestamps: true, collection: 'abnormal_events' })
+@Schema({
+  timestamps: true,
+  collection: 'abnormal_events',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 class AbnormalEvent {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Organization',
   })
   organization_id: string;
 
@@ -27,6 +31,7 @@ class AbnormalEvent {
     required: true,
     enum: ABNORMAL_EVENT_TYPE,
     default: ABNORMAL_EVENT_TYPE.OTHER,
+    type: mongoose.Schema.Types.ObjectId,
   })
   abnormal_type_id: string;
 
@@ -54,18 +59,21 @@ AbnormalEventSchema.virtual('organization', {
   ref: 'Organization',
   localField: 'organization_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 AbnormalEventSchema.virtual('room', {
   ref: 'Room',
   localField: 'room_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 AbnormalEventSchema.virtual('abnormal_type', {
   ref: 'AbnormalType',
   localField: 'abnormal_type_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export {

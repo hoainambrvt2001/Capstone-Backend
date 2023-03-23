@@ -38,7 +38,7 @@ export class UserService {
       //** Find users */
       const users = await this.userModel
         .find(filters, null, options)
-        .populate({ path: 'role', select: 'name' })
+        .populate('role', 'name')
         .select('-password -__v');
 
       //** Calculate total number of users */
@@ -66,6 +66,7 @@ export class UserService {
         .findOne({
           _id: uid,
         })
+        .populate('role', 'name')
         .select('-password -__v');
 
       return {

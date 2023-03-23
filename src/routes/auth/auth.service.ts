@@ -96,11 +96,11 @@ export class AuthService {
       .findOne({
         email: authDto.email,
       })
-      .populate('role');
+      .populate('role', '_id name');
     // If user does not exist throw exception:
     if (!user)
       throw new ForbiddenException('Credential incorrect');
-    if (user.role[0].name != 'admin' && isAdmin) {
+    if (user.role.name != 'admin' && isAdmin) {
       throw new ForbiddenException('Credential incorrect');
     }
     // Compare password
@@ -119,7 +119,7 @@ export class AuthService {
       photo_url: user.photo_url,
       phone_number: user.phone_number,
       registered_faces: user.registered_faces,
-      role: user.role[0].name,
+      role: user.role.name,
     });
   }
 
@@ -129,7 +129,7 @@ export class AuthService {
       .findOne({
         _id: uid,
       })
-      .populate('role');
+      .populate('role', '_id name');
     // If user does not exist throw exception:
     if (!user)
       throw new ForbiddenException('Invalid user!');
@@ -146,7 +146,7 @@ export class AuthService {
             ? user.phone_number
             : '',
           registered_faces: user.registered_faces,
-          role: user.role[0].name,
+          role: user.role.name,
         },
       },
     };

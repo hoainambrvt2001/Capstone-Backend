@@ -7,9 +7,15 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+  ForbiddenException,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  ParseFilePipe,
 } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common/decorators';
-import { ForbiddenException } from '@nestjs/common/exceptions';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { AbnormalEventService } from './abnormal-event.service';
@@ -17,6 +23,7 @@ import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,
 } from './dto';
+
 @UseGuards(JwtGuard)
 @Controller('abnormal-event')
 export class AbnormalEventController {
@@ -24,7 +31,7 @@ export class AbnormalEventController {
 
   @Get()
   getListAbnormalEvents(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Query('limit') limit?: string,
     @Query('page') page?: string,
@@ -45,7 +52,7 @@ export class AbnormalEventController {
 
   @Get(':id')
   getEventById(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') eventId: string,
   ) {
@@ -55,19 +62,25 @@ export class AbnormalEventController {
   }
 
   @Post()
+  @UseInterceptors(FilesInterceptor('event_images'))
   createEvent(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Body() eventDto: AbnormalEventDto,
+    @UploadedFiles()
+    event_images: Array<Express.Multer.File>,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.eventService.createEvent(eventDto);
+    return this.eventService.createEvent(
+      event_images,
+      eventDto,
+    );
   }
 
   @Patch(':id')
   updateEventById(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') eventId: string,
     @Body() eventDto: AbnormalEventUpdateDto,
@@ -82,7 +95,7 @@ export class AbnormalEventController {
 
   @Delete(':id')
   deleteEventById(
-    @GetUser('role')
+    @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') eventId: string,
   ) {

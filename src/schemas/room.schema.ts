@@ -11,7 +11,12 @@ import {
 
 type RoomDocument = Room & Document;
 
-@Schema({ timestamps: true, collection: 'rooms' })
+@Schema({
+  timestamps: true,
+  collection: 'rooms',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 class Room {
   @Prop({
     required: true,
@@ -51,12 +56,14 @@ RoomSchema.virtual('organization', {
   ref: 'Organization',
   localField: 'organization_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 RoomSchema.virtual('room_type', {
   ref: 'RoomType',
   localField: 'room_type_id',
   foreignField: '_id',
+  justOne: true,
 });
 
 export { RoomDocument, Room, RoomSchema };
