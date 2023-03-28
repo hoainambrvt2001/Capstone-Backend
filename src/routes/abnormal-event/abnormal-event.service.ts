@@ -11,17 +11,19 @@ import {
 } from './dto';
 import { FirebaseService } from 'src/utils/firebase-service';
 import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from '@firebase/storage';
+  RoomStatus,
+  RoomStatusDocument,
+} from 'src/schemas/room-status.schema';
+import { StoredImage } from 'src/utils/constants';
 
 @Injectable()
 export class AbnormalEventService {
   constructor(
     @InjectModel(AbnormalEvent.name)
     private eventModel: Model<AbnormalEventDocument>,
+
+    @InjectModel(RoomStatus.name)
+    private roomStatusModel: Model<RoomStatusDocument>,
 
     private firebaseService: FirebaseService,
   ) {}
@@ -96,20 +98,34 @@ export class AbnormalEventService {
   }
 
   async createEvent(
-    event_images: Array<Express.Multer.File>,
     eventDto: AbnormalEventDto,
+    event_images: Array<Express.Multer.File>,
   ) {
     try {
-      const uploadFiles = await this.uploadImagesToFirebase(
-        event_images,
-      );
+      const uploadFiles: Array<StoredImage> =
+        await this.firebaseService.uploadImagesToFirebase(
+          event_images,
+          'abnormal-events',
+        );
+
       const eventData = {
         ...eventDto,
-        images: uploadFiles.map((item) => item.url),
+        images: uploadFiles.map(
+          (item: StoredImage) => item,
+        ),
       };
       const createdEvent = await this.eventModel.create(
         eventData,
       );
+      const updatedRoomStatus =
+        await this.roomStatusModel.updateOne(
+          {
+            room_id: eventDto.room_id,
+          },
+          {
+            $inc: { total_abnormal_events: 1 },
+          },
+        );
       return {
         status_code: 201,
         data: createdEvent,
@@ -158,33 +174,5 @@ export class AbnormalEventService {
       console.log(e);
       throw e;
     }
-  }
-
-  async uploadImage(file: Express.Multer.File) {
-    const [name, type] = file.originalname.split('.');
-    const storage = getStorage(this.firebaseService.app);
-    const imageRef = ref(
-      storage,
-      `abnormal-events/${file.originalname}`,
-    );
-    const metadata = {
-      contentType: file.mimetype,
-    };
-    await uploadBytes(imageRef, file.buffer, metadata);
-    const downloadURL = await getDownloadURL(imageRef);
-    return {
-      url: downloadURL,
-    };
-  }
-
-  async uploadImagesToFirebase(
-    files: Array<Express.Multer.File>,
-  ) {
-    const uploadFiles = [];
-    for (const file of files) {
-      const uploadFile = await this.uploadImage(file);
-      uploadFiles.push(uploadFile);
-    }
-    return uploadFiles;
   }
 }

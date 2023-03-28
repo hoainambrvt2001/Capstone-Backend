@@ -12,13 +12,17 @@ import {
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
+import { MailHelperService } from '../mail-helper/mail-helper.service';
 import { UserDto, UserUpdateDto } from './dto';
 import { UserService } from './user.service';
 
 @UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private mailHelperService: MailHelperService,
+  ) {}
 
   @Get()
   getListUsers(
@@ -76,5 +80,21 @@ export class UserController {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
     return this.userService.deleteUserById(userId);
+  }
+
+  @Get('send/email-confirmation')
+  sendUserConfirmation(
+    @GetUser()
+    reqUser: {
+      id: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    if (reqUser.role != 'admin')
+      throw new ForbiddenException('Forbidden resource');
+    return this.mailHelperService.sendUserConfirmation(
+      reqUser.email,
+    );
   }
 }

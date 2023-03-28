@@ -1,6 +1,18 @@
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from '@firebase/storage';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import {
+  RoomStatus,
+  RoomStatusDocument,
+} from 'src/schemas/room-status.schema';
+import { StoredImage } from 'src/utils/constants';
+import { FirebaseService } from 'src/utils/firebase-service';
 import {
   AccessEvent,
   AccessEventDocument,
@@ -15,6 +27,11 @@ export class AccessEventService {
   constructor(
     @InjectModel(AccessEvent.name)
     private eventModel: Model<AccessEventDocument>,
+
+    @InjectModel(RoomStatus.name)
+    private roomStatusModel: Model<RoomStatusDocument>,
+
+    private firebaseService: FirebaseService,
   ) {}
 
   async getListAccessEvents(
@@ -86,14 +103,41 @@ export class AccessEventService {
     }
   }
 
-  async createEvent(eventDto: AccessEventDto) {
+  async createEvent(
+    eventDto: AccessEventDto,
+    event_images: Array<Express.Multer.File>,
+  ) {
     try {
-      const createdEvent = await this.eventModel.create(
-        eventDto,
-      );
+      const uploadFiles: Array<StoredImage> =
+        await this.firebaseService.uploadImagesToFirebase(
+          event_images,
+          'access-events',
+        );
+
+      const createdEvent = await this.eventModel.create({
+        ...eventDto,
+        is_guest: eventDto.is_guest === 'true',
+        images: uploadFiles.map(
+          (item: StoredImage) => item,
+        ),
+      });
+
+      const updatedRoomStatus =
+        await this.roomStatusModel.updateOne(
+          {
+            room_id: eventDto.room_id,
+          },
+          {
+            $inc: {
+              total_visitor: 1,
+              current_occupancy: 1,
+            },
+          },
+        );
+
       return {
         status_code: 201,
-        data: createdEvent,
+        data: eventDto,
       };
     } catch (e) {
       console.log(e);

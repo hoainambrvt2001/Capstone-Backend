@@ -4,6 +4,10 @@ import {
   AbnormalType,
   AbnormalTypeSchema,
 } from 'src/schemas/abnormal-type.schema';
+import {
+  RoomStatus,
+  RoomStatusSchema,
+} from 'src/schemas/room-status.schema';
 import { FirebaseService } from 'src/utils/firebase-service';
 import {
   AbnormalEvent,
@@ -23,6 +27,7 @@ import { AbnormalEventService } from './abnormal-event.service';
         name: AbnormalType.name,
         schema: AbnormalTypeSchema,
       },
+      { name: RoomStatus.name, schema: RoomStatusSchema },
     ]),
   ],
   controllers: [AbnormalEventController],

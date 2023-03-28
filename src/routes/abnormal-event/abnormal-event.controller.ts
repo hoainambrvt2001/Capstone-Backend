@@ -68,13 +68,13 @@ export class AbnormalEventController {
     reqUser: { id: string; email: string; role: string },
     @Body() eventDto: AbnormalEventDto,
     @UploadedFiles()
-    event_images: Array<Express.Multer.File>,
+    event_images?: Array<Express.Multer.File>,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
     return this.eventService.createEvent(
-      event_images,
       eventDto,
+      event_images,
     );
   }
 

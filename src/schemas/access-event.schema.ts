@@ -4,6 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { StoredImage } from 'src/utils/constants';
 
 type AccessEventDocument = AccessEvent & Document;
 
@@ -33,9 +34,9 @@ class AccessEvent {
   user_id: string;
 
   @Prop({
-    type: [String],
+    type: [],
   })
-  images: string[];
+  images: Array<StoredImage>;
 
   @Prop({
     required: true,

@@ -4,6 +4,7 @@ import {
   User,
   UserSchema,
 } from '../../schemas/user.schema';
+import { MailHelperModule } from '../mail-helper/mail-helper.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -12,6 +13,7 @@ import { UserService } from './user.service';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
     ]),
+    MailHelperModule,
   ],
   controllers: [UserController],
   providers: [UserService],

@@ -8,8 +8,11 @@ import {
   Query,
   UseGuards,
   Patch,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ForbiddenException } from '@nestjs/common/exceptions';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { AccessEventService } from './access-event.service';
@@ -48,14 +51,20 @@ export class AccessEventController {
   }
 
   @Post()
+  @UseInterceptors(FilesInterceptor('event_images'))
   createEvent(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Body() eventDto: AccessEventDto,
+    @UploadedFiles()
+    event_images?: Array<Express.Multer.File>,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.eventService.createEvent(eventDto);
+    return this.eventService.createEvent(
+      eventDto,
+      event_images,
+    );
   }
 
   @Patch(':id')

@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
+  RoomStatus,
+  RoomStatusSchema,
+} from 'src/schemas/room-status.schema';
+import { FirebaseService } from 'src/utils/firebase-service';
+import {
   AccessEvent,
   AccessEventSchema,
 } from '../../schemas/access-event.schema';
@@ -11,9 +16,10 @@ import { AccessEventService } from './access-event.service';
   imports: [
     MongooseModule.forFeature([
       { name: AccessEvent.name, schema: AccessEventSchema },
+      { name: RoomStatus.name, schema: RoomStatusSchema },
     ]),
   ],
   controllers: [AccessEventController],
-  providers: [AccessEventService],
+  providers: [AccessEventService, FirebaseService],
 })
 export class AccessEventModule {}

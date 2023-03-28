@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsBooleanString,
   IsDateString,
   IsMongoId,
   IsNotEmpty,
@@ -20,11 +21,7 @@ export class AccessEventDto {
   @IsNotEmpty()
   user_id: string;
 
-  @IsArray()
-  @IsOptional()
-  images: string[];
-
-  @IsBoolean()
+  @IsBooleanString()
   @IsNotEmpty()
   is_guest: string;
 
@@ -46,12 +43,8 @@ export class AccessEventUpdateDto {
   @IsOptional()
   user_id: string;
 
-  @IsArray()
-  @IsOptional()
-  images: string[];
-
-  @IsBoolean()
-  @IsOptional()
+  @IsBooleanString()
+  @IsNotEmpty()
   is_guest: string;
 
   @IsDateString()

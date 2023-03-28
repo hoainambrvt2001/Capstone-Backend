@@ -4,7 +4,10 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { ABNORMAL_EVENT_TYPE } from '../../src/utils/constants';
+import {
+  ABNORMAL_EVENT_TYPE,
+  StoredImage,
+} from '../../src/utils/constants';
 
 type AbnormalEventDocument = AbnormalEvent & Document;
 
@@ -37,9 +40,9 @@ class AbnormalEvent {
 
   @Prop({
     required: true,
-    type: [String],
+    type: [],
   })
-  images: string[];
+  images: Array<StoredImage>;
 
   @Prop({
     required: true,
