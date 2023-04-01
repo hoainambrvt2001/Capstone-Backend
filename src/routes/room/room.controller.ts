@@ -52,6 +52,20 @@ export class RoomController {
     );
   }
 
+  @Get('all')
+  getAllRooms(
+    @GetUser()
+    reqUser: {
+      id: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    if (reqUser.role != 'admin')
+      throw new ForbiddenException('Forbidden resource');
+    return this.roomService.getAllRooms();
+  }
+
   @Get(':id')
   getRoomById(
     @GetUser()

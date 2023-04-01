@@ -4,7 +4,10 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { STORE_STATUS } from '../../src/utils/constants';
+import {
+  StoredImage,
+  STORE_STATUS,
+} from '../../src/utils/constants';
 
 type UserDocument = User & Document;
 
@@ -32,9 +35,9 @@ class User {
 
   @Prop({
     required: true,
-    type: [String],
+    type: [],
   })
-  registered_faces: string[];
+  registered_faces: Array<StoredImage>;
 
   @Prop({
     required: true,

@@ -1,5 +1,6 @@
 import {
   IsDate,
+  IsDateString,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
@@ -13,7 +14,7 @@ export class RequestAccessDto {
   @IsNotEmpty()
   organization_id: string;
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   requested_time: string;
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import {
   AbnormalEvent,
   AbnormalEventDocument,
@@ -38,9 +38,16 @@ export class AbnormalEventService {
     try {
       // Determine filters in find()
       const filters: any = {};
-      if (roomId) filters.room_id = roomId;
-      if (orgId) filters.organization_id = orgId;
-      if (typeId) filters.abnormal_event_id = typeId;
+      if (roomId)
+        filters.room_id = new mongoose.Types.ObjectId(
+          roomId,
+        );
+      if (orgId)
+        filters.organization_id =
+          new mongoose.Types.ObjectId(orgId);
+      if (typeId)
+        filters.abnormal_type_id =
+          new mongoose.Types.ObjectId(typeId);
 
       // Determine options in find()
       const options: any = {

@@ -6,7 +6,7 @@ import {
 } from '@firebase/storage';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import {
   RoomStatus,
   RoomStatusDocument,
@@ -45,7 +45,8 @@ export class AccessEventService {
     try {
       // Determine filters in find()
       const filters: any = {};
-      if (uid) filters.user_id = uid;
+      if (uid)
+        filters.user_id = new mongoose.Types.ObjectId(uid);
       if (orgId) filters.organization_id = orgId;
       if (roomId) filters.room_id = roomId;
       if (guest) filters.is_guest = guest;

@@ -108,6 +108,23 @@ export class RoomService {
     }
   }
 
+  async getAllRooms() {
+    try {
+      // Get all rooms
+      const rooms = await this.roomModel
+        .find({})
+        .select('id name');
+
+      return {
+        status_code: 200,
+        data: rooms,
+      };
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
   async getRoomById(roomId: string) {
     try {
       const room = await this.roomModel

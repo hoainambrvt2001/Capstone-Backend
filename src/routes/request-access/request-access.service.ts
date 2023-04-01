@@ -17,19 +17,40 @@ export class RequestAccessService {
     private requestModel: Model<RequestAccessDocument>,
   ) {}
 
-  async getListRequests(limit: string, page: string) {
+  async getListRequests(
+    limit: number,
+    page: number,
+    status: string,
+    queryString: string,
+  ) {
     try {
+      //** Determine filters in find() */
+      const filters: any = {};
+      if (status) filters.status = status;
+
       //** Determine options in find() */
       const options: any = {
-        limit: limit ? parseInt(limit) : 9,
-        skip: page ? parseInt(page) - 1 : 0,
+        limit: limit ? limit : 9,
+        skip: page ? page - 1 : 0,
       };
+
+      //** Determine conditions in populate('user') */
+      // const matches: any = {};
+      // if (queryString) {
+      //   const reg = new RegExp(queryString, 'i');
+      //   matches.name = reg;
+      // }
 
       //** Find requests */
       const requests = await this.requestModel
-        .find({}, null, options)
+        .find(filters, null, options)
         .populate('organization', '_id name')
-        .populate('user', '_id name');
+        .populate({
+          path: 'user',
+          select:
+            '_id name email photo_url registered_faces',
+        })
+        .select('-__v');
 
       //** Calculate total number of requests */
       const totalRequests = await this.requestModel.count(
@@ -59,7 +80,11 @@ export class RequestAccessService {
           _id: requestId,
         })
         .populate('organization', '_id name')
-        .populate('user', '_id name');
+        .populate(
+          'user',
+          '_id name email photo_url registered_faces',
+        )
+        .select('-__v');
       return {
         status_code: 200,
         data: request,
@@ -77,7 +102,11 @@ export class RequestAccessService {
           user_id: uid,
         })
         .populate('organization', '_id name')
-        .populate('user', '_id name');
+        .populate(
+          'user',
+          '_id name photo_url registered_faces',
+        )
+        .select('-__v');
       return {
         status_code: 200,
         data: requests,
@@ -101,7 +130,11 @@ export class RequestAccessService {
       );
       return {
         status_code: 201,
-        data: { id: createdRequest.id, ...createdRequest },
+        data: {
+          id: createdRequest.id,
+          ...requestAccessDto,
+          status: 'pending',
+        },
       };
     } catch (e) {
       console.log(e);

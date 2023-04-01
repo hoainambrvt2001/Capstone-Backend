@@ -32,7 +32,7 @@ export class UserDto {
 
   @IsArray()
   @IsOptional()
-  registered_faces: string[];
+  registered_faces: Array<object>;
 }
 
 export class UserUpdateDto {
@@ -54,7 +54,7 @@ export class UserUpdateDto {
 
   @IsArray()
   @IsOptional()
-  registered_faces: string[];
+  registered_faces: Array<object>;
 
   @IsEnum(STORE_STATUS)
   @IsOptional()

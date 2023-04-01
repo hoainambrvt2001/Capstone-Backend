@@ -16,9 +16,10 @@ export class UserService {
   ) {}
 
   async getListUsers(
-    limit: string,
-    page: string,
+    limit: number,
+    page: number,
     role: string,
+    queryString: string,
   ) {
     try {
       //** Determine filters in find() */
@@ -29,10 +30,15 @@ export class UserService {
       else if (role === 'subscriber')
         filters.role_id = ROLE.SUBSCRIBER;
 
+      if (queryString) {
+        const reg = new RegExp(queryString, 'i');
+        filters.name = reg;
+      }
+
       //** Determine options in find() */
       const options: any = {
-        limit: limit ? parseInt(limit) : 9,
-        skip: page ? parseInt(page) - 1 : 0,
+        limit: limit ? limit : 9,
+        skip: page ? page - 1 : 0,
       };
 
       //** Find users */

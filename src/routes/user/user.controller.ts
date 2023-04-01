@@ -28,13 +28,19 @@ export class UserController {
   getListUsers(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
-    @Query('limit') limit?: string,
-    @Query('page') page?: string,
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
     @Query('role') role?: string,
+    @Query('q') queryString?: string,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.userService.getListUsers(limit, page, role);
+    return this.userService.getListUsers(
+      limit,
+      page,
+      role,
+      queryString,
+    );
   }
 
   @Get(':id')
@@ -66,7 +72,9 @@ export class UserController {
     @Param('id') userId: string,
     @Body() userDto: UserUpdateDto,
   ) {
-    if (reqUser.role != 'admin')
+    const cond1 = reqUser.role != 'admin';
+    const cond2 = reqUser.id != userId;
+    if (cond1 && cond2)
       throw new ForbiddenException('Forbidden resource');
     return this.userService.updateUserById(userId, userDto);
   }

@@ -29,12 +29,19 @@ export class RequestAccessController {
   getListRequests(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
-    @Query('limit') limit?: string,
-    @Query('page') page?: string,
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
+    @Query('status') status?: string,
+    @Query('q') queryString?: string,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.requestService.getListRequests(limit, page);
+    return this.requestService.getListRequests(
+      limit,
+      page,
+      status,
+      queryString,
+    );
   }
 
   @Get(':id')
