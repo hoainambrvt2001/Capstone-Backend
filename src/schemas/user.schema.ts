@@ -5,79 +5,61 @@ import {
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import {
-  GENDER,
-  ROLES,
+  StoredImage,
   STORE_STATUS,
 } from '../../src/utils/constants';
-import { ImageSchema } from './common.schema';
 
-export type UserDocument = User & Document;
+type UserDocument = User & Document;
 
-@Schema({ timestamps: true })
-export class User {
-  @Prop({ required: true, unique: true })
+@Schema({
+  timestamps: true,
+  collection: 'users',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
+class User {
+  @Prop({ required: true, unique: true, type: String })
   email: string;
 
-  @Prop({ required: true })
-  hash_password: string;
+  @Prop({ type: String })
+  password: string;
 
-  @Prop({ required: true })
-  first_name: string;
+  @Prop({ required: true, type: String })
+  name: string;
 
-  @Prop({ required: true })
-  last_name: string;
+  @Prop({ type: String })
+  photo_url: string;
 
-  @Prop({
-    type: ImageSchema,
-  })
-  avatar: object;
-
-  @Prop()
-  company: string;
-
-  @Prop()
-  phone: string;
+  @Prop({ type: String })
+  phone_number: string;
 
   @Prop({
     required: true,
-    enum: [GENDER.MALE, GENDER.FEMALE, GENDER.OTHER],
-    default: GENDER.MALE,
+    type: [],
   })
-  gender: string;
+  registered_faces: Array<StoredImage>;
 
   @Prop({
     required: true,
-    type: mongoose.Schema.Types.Date,
-    default: Date.now(),
-  })
-  birthdate: Date;
-
-  @Prop()
-  province: string;
-
-  @Prop()
-  district: string;
-
-  @Prop()
-  ward: string;
-
-  @Prop()
-  address: string;
-
-  @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Role',
-    default: ROLES.SUBSCRIBER,
   })
-  role: string;
+  role_id: string;
 
   @Prop({
     required: true,
-    enum: [STORE_STATUS.AVAIALBE, STORE_STATUS.UNAVAILABLE],
+    enum: STORE_STATUS,
     default: STORE_STATUS.AVAIALBE,
   })
   status: string;
 }
 
-export const UserSchema =
-  SchemaFactory.createForClass(User);
+const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('role', {
+  ref: 'Role',
+  localField: 'role_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+export { UserDocument, User, UserSchema };

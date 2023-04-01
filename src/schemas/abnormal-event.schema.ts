@@ -4,54 +4,83 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { ABNORMAL_EVENT_TYPE } from '../../src/utils/constants';
-import { ImageSchema } from './common.schema';
+import {
+  ABNORMAL_EVENT_TYPE,
+  StoredImage,
+} from '../../src/utils/constants';
 
-export type AbnormalEventDocument = AbnormalEvent &
-  Document;
+type AbnormalEventDocument = AbnormalEvent & Document;
 
-@Schema({ timestamps: true })
-export class AbnormalEvent {
+@Schema({
+  timestamps: true,
+  collection: 'abnormal_events',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
+class AbnormalEvent {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Room',
   })
-  room: string;
+  organization_id: string;
 
   @Prop({
     required: true,
-    enum: [
-      ABNORMAL_EVENT_TYPE.STRANGER,
-      ABNORMAL_EVENT_TYPE.OVERCROWD,
-      ABNORMAL_EVENT_TYPE.FIRE,
-      ABNORMAL_EVENT_TYPE.OTHER,
-    ],
+    type: mongoose.Schema.Types.ObjectId,
   })
-  type: string;
+  room_id: string;
 
   @Prop({
     required: true,
-    type: [ImageSchema],
+    enum: ABNORMAL_EVENT_TYPE,
+    default: ABNORMAL_EVENT_TYPE.OTHER,
+    type: mongoose.Schema.Types.ObjectId,
   })
-  images: object[];
+  abnormal_type_id: string;
 
-  @Prop()
-  note: string;
+  @Prop({
+    required: true,
+    type: [],
+  })
+  images: Array<StoredImage>;
 
   @Prop({
     required: true,
     type: mongoose.Schema.Types.Date,
     default: Date.now(),
   })
-  time: Date;
+  occurred_time: Date;
 
-  @Prop({
-    required: true,
-    default: false,
-  })
-  is_checked: boolean;
+  @Prop({ type: String })
+  note: string;
 }
 
-export const AbnormalEventSchema =
+const AbnormalEventSchema =
   SchemaFactory.createForClass(AbnormalEvent);
+
+AbnormalEventSchema.virtual('organization', {
+  ref: 'Organization',
+  localField: 'organization_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+AbnormalEventSchema.virtual('room', {
+  ref: 'Room',
+  localField: 'room_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+AbnormalEventSchema.virtual('abnormal_type', {
+  ref: 'AbnormalType',
+  localField: 'abnormal_type_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+export {
+  AbnormalEventDocument,
+  AbnormalEvent,
+  AbnormalEventSchema,
+};

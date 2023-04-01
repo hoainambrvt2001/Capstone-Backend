@@ -4,50 +4,80 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { CREDENTIAL_TYPE } from '../../src/utils/constants';
-import { ImageSchema } from './common.schema';
+import { StoredImage } from 'src/utils/constants';
 
-export type AccessEventDocument = AccessEvent & Document;
+type AccessEventDocument = AccessEvent & Document;
 
-@Schema({ timestamps: true })
-export class AccessEvent {
+@Schema({
+  timestamps: true,
+  collection: 'access_events',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
+class AccessEvent {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
   })
-  user: string;
+  organization_id: string;
 
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Room',
   })
-  room: string;
+  room_id: string;
 
   @Prop({
     required: true,
-    type: [ImageSchema],
+    type: mongoose.Schema.Types.ObjectId,
   })
-  images: object[];
+  user_id: string;
+
+  @Prop({
+    type: [],
+  })
+  images: Array<StoredImage>;
 
   @Prop({
     required: true,
-    enum: [
-      CREDENTIAL_TYPE.APP_QR,
-      CREDENTIAL_TYPE.MAIL_QR,
-      CREDENTIAL_TYPE.ADMIN_PERMIT,
-    ],
+    type: Boolean,
   })
-  credential: string;
+  is_guest: boolean;
 
   @Prop({
     required: true,
     type: mongoose.Schema.Types.Date,
     default: Date.now(),
   })
-  time: Date;
+  accessed_time: Date;
 }
 
-export const AccessEventSchema =
+const AccessEventSchema =
   SchemaFactory.createForClass(AccessEvent);
+
+AccessEventSchema.virtual('room', {
+  ref: 'Room',
+  localField: 'room_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+AccessEventSchema.virtual('organization', {
+  ref: 'Organization',
+  localField: 'organization_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+AccessEventSchema.virtual('user', {
+  ref: 'User',
+  localField: 'user_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+export {
+  AccessEventDocument,
+  AccessEvent,
+  AccessEventSchema,
+};
