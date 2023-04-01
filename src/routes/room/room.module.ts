@@ -7,13 +7,13 @@ import {
 import {
   RoomType,
   RoomTypeSchema,
-} from 'src/schemas/room-type.schema';
+} from '../../schemas/room-type.schema';
 import { RoomService } from './room.service';
 import { RoomController } from './room.controller';
 import {
   RoomStatus,
   RoomStatusSchema,
-} from 'src/schemas/room-status.schema';
+} from '../../schemas/room-status.schema';
 
 @Module({
   imports: [

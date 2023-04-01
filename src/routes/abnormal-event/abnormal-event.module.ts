@@ -3,12 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   AbnormalType,
   AbnormalTypeSchema,
-} from 'src/schemas/abnormal-type.schema';
+} from '../../schemas/abnormal-type.schema';
 import {
   RoomStatus,
   RoomStatusSchema,
-} from 'src/schemas/room-status.schema';
-import { FirebaseService } from 'src/utils/firebase-service';
+} from '../../schemas/room-status.schema';
+import { FirebaseService } from '../../utils/firebase-service';
 import {
   AbnormalEvent,
   AbnormalEventSchema,

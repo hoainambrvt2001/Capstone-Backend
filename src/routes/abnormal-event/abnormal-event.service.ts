@@ -9,12 +9,12 @@ import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,
 } from './dto';
-import { FirebaseService } from 'src/utils/firebase-service';
+import { FirebaseService } from '../../utils/firebase-service';
 import {
   RoomStatus,
   RoomStatusDocument,
-} from 'src/schemas/room-status.schema';
-import { StoredImage } from 'src/utils/constants';
+} from '../../schemas/room-status.schema';
+import { StoredImage } from '../../utils/constants';
 
 @Injectable()
 export class AbnormalEventService {

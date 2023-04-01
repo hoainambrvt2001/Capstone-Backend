@@ -4,7 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { REQUEST_ACCESS_STATUS } from 'src/utils/constants';
+import { REQUEST_ACCESS_STATUS } from '../utils/constants';
 
 type RequestAccessDocument = RequestAccess & Document;
 

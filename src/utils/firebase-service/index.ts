@@ -8,7 +8,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from '@firebase/storage';
-import { StoredImage } from 'src/utils/constants';
+import { StoredImage } from '../constants';
 
 @Injectable()
 export class FirebaseService {

@@ -9,7 +9,11 @@
     "FIREBASE_PROJECT_ID": "dacn-ec907",
     "FIREBASE_STORAGE_BUCKET": "dacn-ec907.appspot.com",
     "FIREBASE_MESSAGING_SENDER_ID": "1009737711764",
-    "FIREBASE_APP_ID": "1:1009737711764:web:dde8cc0a34c98cdd023481"
+    "FIREBASE_APP_ID": "1:1009737711764:web:dde8cc0a34c98cdd023481",
+    "MAIL_HOST": "smtp.gmail.com",
+    "MAIL_USER": "nam.vo.katzebrvt@gmail.com",
+    "MAIL_PASSWORD": "rkkljwdfbvogvcfg",
+    "MAIL_FROM": "nam.vo.katzebrvt@gmail.com"
   },
   "builds": [
     {

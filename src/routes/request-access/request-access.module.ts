@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   RequestAccess,
   RequestAccessSchema,
-} from 'src/schemas/request-access.schema';
+} from '../../schemas/request-access.schema';
 import { RequestAccessController } from './request-access.controller';
 import { RequestAccessService } from './request-access.service';
 

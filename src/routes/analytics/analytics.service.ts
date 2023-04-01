@@ -23,19 +23,19 @@ import mongoose, { Model, Mongoose } from 'mongoose';
 import {
   AbnormalEvent,
   AbnormalEventDocument,
-} from 'src/schemas/abnormal-event.schema';
+} from '../../schemas/abnormal-event.schema';
 import {
   AccessEvent,
   AccessEventDocument,
-} from 'src/schemas/access-event.schema';
+} from '../../schemas/access-event.schema';
 import {
   RoomStatus,
   RoomStatusDocument,
-} from 'src/schemas/room-status.schema';
+} from '../../schemas/room-status.schema';
 import {
   ABNORMAL_EVENT_TYPE,
   DAY_OF_WEEK,
-} from 'src/utils/constants';
+} from '../../utils/constants';
 
 @Injectable()
 export class AnalyticsService {

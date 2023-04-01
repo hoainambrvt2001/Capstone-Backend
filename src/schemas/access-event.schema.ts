@@ -4,7 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { StoredImage } from 'src/utils/constants';
+import { StoredImage } from '../utils/constants';
 
 type AccessEventDocument = AccessEvent & Document;
 
