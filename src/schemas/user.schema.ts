@@ -7,7 +7,7 @@ import mongoose, { Document } from 'mongoose';
 import {
   StoredImage,
   STORE_STATUS,
-} from '../../src/utils/constants';
+} from '../utils/constants';
 
 type UserDocument = User & Document;
 

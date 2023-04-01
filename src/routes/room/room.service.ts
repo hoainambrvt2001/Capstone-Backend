@@ -4,11 +4,11 @@ import { Model } from 'mongoose';
 import {
   RoomStatus,
   RoomStatusDocument,
-} from 'src/schemas/room-status.schema';
+} from '../../schemas/room-status.schema';
 import {
   Room,
   RoomDocument,
-} from 'src/schemas/room.schema';
+} from '../../schemas/room.schema';
 import { RoomDto, RoomUpdateDto } from './dto';
 
 @Injectable()

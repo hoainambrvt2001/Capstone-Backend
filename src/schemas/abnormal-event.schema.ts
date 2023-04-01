@@ -7,7 +7,7 @@ import mongoose, { Document } from 'mongoose';
 import {
   ABNORMAL_EVENT_TYPE,
   StoredImage,
-} from '../../src/utils/constants';
+} from '../utils/constants';
 
 type AbnormalEventDocument = AbnormalEvent & Document;
 

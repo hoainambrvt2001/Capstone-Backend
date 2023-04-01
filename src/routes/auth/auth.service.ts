@@ -12,7 +12,7 @@ import {
   UserDocument,
 } from '../../schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
-import { ROLE } from 'src/utils/constants';
+import { ROLE } from '../../utils/constants';
 import { add } from 'date-fns';
 
 @Injectable()

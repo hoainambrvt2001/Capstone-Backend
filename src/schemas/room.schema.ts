@@ -4,10 +4,7 @@ import {
   SchemaFactory,
 } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import {
-  ROOM_STATUS,
-  ROOM_TYPE,
-} from 'src/utils/constants';
+import { ROOM_STATUS, ROOM_TYPE } from '../utils/constants';
 
 type RoomDocument = Room & Document;
 

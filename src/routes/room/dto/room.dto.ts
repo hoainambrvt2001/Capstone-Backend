@@ -9,7 +9,7 @@ import {
 import {
   ROOM_STATUS,
   ROOM_TYPE,
-} from 'src/utils/constants';
+} from '../../../utils/constants';
 
 export class RoomDto {
   @IsMongoId()

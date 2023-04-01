@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ABNORMAL_EVENT_TYPE } from 'src/utils/constants';
+import { ABNORMAL_EVENT_TYPE } from '../../../utils/constants';
 
 export class AbnormalEventDto {
   @IsMongoId()

@@ -10,9 +10,9 @@ import mongoose, { Model } from 'mongoose';
 import {
   RoomStatus,
   RoomStatusDocument,
-} from 'src/schemas/room-status.schema';
-import { StoredImage } from 'src/utils/constants';
-import { FirebaseService } from 'src/utils/firebase-service';
+} from '../../schemas/room-status.schema';
+import { StoredImage } from '../../utils/constants';
+import { FirebaseService } from '../../utils/firebase-service';
 import {
   AccessEvent,
   AccessEventDocument,
