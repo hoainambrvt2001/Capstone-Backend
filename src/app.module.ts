@@ -16,7 +16,6 @@ import { StreamingModule } from './routes/streaming/streaming.module';
 import { AnalyticsModule } from './routes/analytics/analytics.module';
 import { RoomStatusModule } from './routes/room-status/room-status.module';
 import { MailHelperModule } from './routes/mail-helper/mail-helper.module';
-import { MqttService } from './routes/mqtt/mqtt.service';
 
 const config: ConfigService = new ConfigService();
 
@@ -39,6 +38,5 @@ const config: ConfigService = new ConfigService();
     RoomStatusModule,
     MailHelperModule,
   ],
-  providers: [MqttService],
 })
 export class AppModule {}

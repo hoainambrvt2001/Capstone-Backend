@@ -15,6 +15,7 @@ import {
 } from '../../schemas/abnormal-event.schema';
 import { AbnormalEventController } from './abnormal-event.controller';
 import { AbnormalEventService } from './abnormal-event.service';
+import { MqttService } from '../mqtt/mqtt.service';
 
 @Module({
   imports: [
@@ -31,6 +32,10 @@ import { AbnormalEventService } from './abnormal-event.service';
     ]),
   ],
   controllers: [AbnormalEventController],
-  providers: [AbnormalEventService, FirebaseService],
+  providers: [
+    AbnormalEventService,
+    FirebaseService,
+    MqttService,
+  ],
 })
 export class AbnormalEventModule {}

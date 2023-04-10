@@ -1,8 +1,13 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  Global,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect } from 'mqtt';
 import { MqttClient } from 'mqtt/types/lib/client';
 
+@Global()
 @Injectable()
 export class MqttService implements OnModuleInit {
   private mqttClient: MqttClient;

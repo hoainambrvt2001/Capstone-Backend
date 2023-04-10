@@ -9,6 +9,7 @@ import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,
 } from './dto';
+import { MqttService } from '../mqtt/mqtt.service';
 import { FirebaseService } from '../../utils/firebase-service';
 import {
   RoomStatus,
@@ -26,6 +27,8 @@ export class AbnormalEventService {
     private roomStatusModel: Model<RoomStatusDocument>,
 
     private firebaseService: FirebaseService,
+
+    private mqttService: MqttService,
   ) {}
 
   async getEvents(
@@ -121,9 +124,15 @@ export class AbnormalEventService {
           (item: StoredImage) => item,
         ),
       };
-      const createdEvent = await this.eventModel.create(
-        eventData,
-      );
+      const createdEvent = await this.eventModel
+        .create(eventData)
+        .then((event) =>
+          event.populate('organization', '_id name'),
+        )
+        .then((event) =>
+          event.populate('room', '_id name max_occupancy'),
+        );
+
       const updatedRoomStatus =
         await this.roomStatusModel.updateOne(
           {
@@ -133,6 +142,10 @@ export class AbnormalEventService {
             $inc: { total_abnormal_events: 1 },
           },
         );
+      this.mqttService.publish(
+        'izayazuna/feeds/talk-to-admin',
+        JSON.stringify(createdEvent),
+      );
       return {
         status_code: 201,
         data: createdEvent,
