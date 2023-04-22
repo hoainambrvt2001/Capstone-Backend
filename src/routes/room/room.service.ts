@@ -68,12 +68,18 @@ export class RoomService {
     page: string,
     type_id: string,
     status: string,
+    queryString: string,
   ) {
     try {
       // Determine filters in find()
       const filters: any = {};
       if (type_id) filters.room_type_id = type_id;
       if (status) filters.status = status;
+
+      if (queryString) {
+        const reg = new RegExp(queryString, 'i');
+        filters.name = reg;
+      }
 
       // Determine options in find()
       const options: any = {

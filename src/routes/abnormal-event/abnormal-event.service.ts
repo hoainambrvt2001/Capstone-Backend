@@ -58,6 +58,7 @@ export class AbnormalEventService {
         skip: page ? parseInt(page) - 1 : 0,
       };
 
+
       // Find all filtered abnormal_events:
       const abnormal_events = await this.eventModel
         .find(filters, null, options)
