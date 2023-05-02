@@ -1,9 +1,3 @@
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from '@firebase/storage';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -12,7 +6,6 @@ import {
   RoomStatusDocument,
 } from '../../schemas/room-status.schema';
 import { StoredImage } from '../../utils/constants';
-import { FirebaseService } from '../../utils/firebase-service';
 import {
   AccessEvent,
   AccessEventDocument,
@@ -21,6 +14,7 @@ import {
   AccessEventDto,
   AccessEventUpdateDto,
 } from './dto';
+import { StorageService } from 'src/services/storage/storage.service';
 
 @Injectable()
 export class AccessEventService {
@@ -31,8 +25,9 @@ export class AccessEventService {
     @InjectModel(RoomStatus.name)
     private roomStatusModel: Model<RoomStatusDocument>,
 
-    private firebaseService: FirebaseService,
-  ) {}
+    private storageService: StorageService
+
+    ) {}
 
   async getListAccessEvents(
     limit: string,
@@ -109,17 +104,21 @@ export class AccessEventService {
     event_images: Array<Express.Multer.File>,
   ) {
     try {
-      const uploadFiles: Array<StoredImage> =
-        await this.firebaseService.uploadImagesToFirebase(
-          event_images,
-          'access-events',
-        );
+      let uploadedImages : Array<StoredImage> = [];
+      for (const eventImage of event_images) {  
+          const uploadedImage = await this.storageService.save(
+            "events/access_events/",
+            eventImage.originalname,
+            eventImage.buffer
+          );
+          uploadedImages.push(uploadedImage);
+      }
 
       const createdEvent = await this.eventModel.create({
         ...eventDto,
         is_guest: eventDto.is_guest === 'true',
-        images: uploadFiles.map(
-          (item: StoredImage) => item,
+        images: uploadedImages.map(
+          (image: StoredImage) => image,
         ),
       });
 

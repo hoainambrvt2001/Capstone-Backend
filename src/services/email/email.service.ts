@@ -2,16 +2,15 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class MailHelperService {
+export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserConfirmation(userEmail: string) {
     await this.mailerService.sendMail({
       to: userEmail,
-      // from: '"Support Team" <support@example.com>', // override default from
       subject:
         'Welcome to our BKAccess application! Confirm your Email',
-      template: './confirmation', // `.hbs` extension is appended automatically
+      template: './confirmation', // `.hbs` extension
       context: {
         email: userEmail,
         name: userEmail.split('@')[0],

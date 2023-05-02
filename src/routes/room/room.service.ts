@@ -27,9 +27,10 @@ export class RoomService {
     limit: string,
   ) {
     try {
-      // Change query string to regExp:
-      const reg = new RegExp(queryString, 'i');
-      const filters = { name: reg };
+      // Determine filteres to find():
+      const filters = {
+        name: new RegExp(queryString, 'i'),
+      };
 
       // Determine options in find():
       const options: any = {
@@ -51,7 +52,7 @@ export class RoomService {
       );
 
       return {
-        status: 200,
+        status_code: 200,
         data: rooms,
         total: totalRooms,
         page: options.skip + 1,

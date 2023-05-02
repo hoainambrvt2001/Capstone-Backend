@@ -173,7 +173,7 @@ export class AnalyticsService {
         callback = (param: Date) => format(param, 'dd/MM');
       }
       return {
-        status: 200,
+        status_code: 200,
         data: await this.countEventsEachIntervals(
           roomId,
           intervals,

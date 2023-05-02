@@ -1,19 +1,14 @@
-import {
-  Global,
-  Injectable,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect } from 'mqtt';
 import { MqttClient } from 'mqtt/types/lib/client';
 
-@Global()
 @Injectable()
-export class MqttService implements OnModuleInit {
+export class MqttService {
   private mqttClient: MqttClient;
   private configService: ConfigService;
 
-  onModuleInit() {
+  constructor() {
     this.configService = new ConfigService();
     const host = this.configService.get<string>(
       'ADAFRUIT_MQTT_HOST',
@@ -41,18 +36,18 @@ export class MqttService implements OnModuleInit {
       reconnectPeriod: 1000,
     });
 
-    this.mqttClient.on('connect', () => {
-      if (this.mqttClient) {
-        const topic = this.configService.get<string>(
-          'ADAFRUIT_MQTT_TOPIC',
-        );
-        this.mqttClient.subscribe(topic, (error) => {
-          console.log('Connected to AdafruitMQTT');
-          if (error)
-            console.log('Subscribe to topics error', error);
-        });
-      }
-    });
+    // this.mqttClient.on('connect', () => {
+    //   if (this.mqttClient) {
+    //     const topic = this.configService.get<string>(
+    //       'ADAFRUIT_MQTT_HARDWARE_TOPIC',
+    //     );
+    //     this.mqttClient.subscribe(topic, (error) => {
+    //       console.log('Connected to AdafruitMQTT');
+    //       if (error)
+    //         console.log('Subscribe to topics error', error);
+    //     });
+    //   }
+    // });
 
     this.mqttClient.on('message', (topic, message) => {
       console.log(
@@ -71,7 +66,9 @@ export class MqttService implements OnModuleInit {
   }
 
   publish(topic: string, payload: string): string {
-    console.log(`Publishing to ${topic}`);
+    console.log(
+      `Publishing to topic: ${topic} with payload: ${payload}`,
+    );
     this.mqttClient.publish(topic, payload);
     return `Publishing to ${topic}`;
   }

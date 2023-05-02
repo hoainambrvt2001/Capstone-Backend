@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import mongoose, { Model } from 'mongoose';
 import {
   AbnormalEvent,
@@ -9,8 +10,8 @@ import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,
 } from './dto';
-import { MqttService } from '../mqtt/mqtt.service';
-import { FirebaseService } from '../../utils/firebase-service';
+import { MqttService } from '../../services/mqtt/mqtt.service';
+import { StorageService } from 'src/services/storage/storage.service';
 import {
   RoomStatus,
   RoomStatusDocument,
@@ -26,9 +27,11 @@ export class AbnormalEventService {
     @InjectModel(RoomStatus.name)
     private roomStatusModel: Model<RoomStatusDocument>,
 
-    private firebaseService: FirebaseService,
-
     private mqttService: MqttService,
+
+    private storageService: StorageService,
+
+    private configService: ConfigService,
   ) {}
 
   async getEvents(
@@ -57,7 +60,6 @@ export class AbnormalEventService {
         limit: limit ? parseInt(limit) : 9,
         skip: page ? parseInt(page) - 1 : 0,
       };
-
 
       // Find all filtered abnormal_events:
       const abnormal_events = await this.eventModel
@@ -113,16 +115,22 @@ export class AbnormalEventService {
     event_images: Array<Express.Multer.File>,
   ) {
     try {
-      const uploadFiles: Array<StoredImage> =
-        await this.firebaseService.uploadImagesToFirebase(
-          event_images,
-          'abnormal-events',
-        );
-
+      // Upload image to Google Cloud Storage:
+      let uploadedImages: Array<StoredImage> = [];
+      for (const eventImage of event_images) {
+        const uploadedImage =
+          await this.storageService.save(
+            'events/abnormal_events/',
+            eventImage.originalname,
+            eventImage.buffer,
+          );
+        uploadedImages.push(uploadedImage);
+      }
+      // Store event to MongoDB:
       const eventData = {
         ...eventDto,
-        images: uploadFiles.map(
-          (item: StoredImage) => item,
+        images: uploadedImages.map(
+          (image: StoredImage) => image,
         ),
       };
       const createdEvent = await this.eventModel
@@ -133,7 +141,7 @@ export class AbnormalEventService {
         .then((event) =>
           event.populate('room', '_id name max_occupancy'),
         );
-
+      // Update room status:
       const updatedRoomStatus =
         await this.roomStatusModel.updateOne(
           {
@@ -143,10 +151,12 @@ export class AbnormalEventService {
             $inc: { total_abnormal_events: 1 },
           },
         );
-      this.mqttService.publish(
-        'izayazuna/feeds/talk-to-admin',
-        JSON.stringify(createdEvent),
+      // Notify admin about abnormal event:
+      const topic = this.configService.get<string>(
+        'ADAFRUIT_MQTT_ADMIN_TOPIC',
       );
+      const message = JSON.stringify(createdEvent);
+      this.mqttService.publish(topic, message);
       return {
         status_code: 201,
         data: createdEvent,

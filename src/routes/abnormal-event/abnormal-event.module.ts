@@ -8,14 +8,15 @@ import {
   RoomStatus,
   RoomStatusSchema,
 } from '../../schemas/room-status.schema';
-import { FirebaseService } from '../../utils/firebase-service';
 import {
   AbnormalEvent,
   AbnormalEventSchema,
 } from '../../schemas/abnormal-event.schema';
 import { AbnormalEventController } from './abnormal-event.controller';
 import { AbnormalEventService } from './abnormal-event.service';
-import { MqttService } from '../mqtt/mqtt.service';
+import { StorageModule } from 'src/services/storage/storage.module';
+import { MqttModule } from 'src/services/mqtt/mqtt.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -30,12 +31,11 @@ import { MqttService } from '../mqtt/mqtt.service';
       },
       { name: RoomStatus.name, schema: RoomStatusSchema },
     ]),
+    StorageModule,
+    MqttModule,
+    ConfigModule,
   ],
   controllers: [AbnormalEventController],
-  providers: [
-    AbnormalEventService,
-    FirebaseService,
-    MqttService,
-  ],
+  providers: [AbnormalEventService],
 })
 export class AbnormalEventModule {}

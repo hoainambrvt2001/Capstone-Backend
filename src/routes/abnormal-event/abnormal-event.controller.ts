@@ -11,9 +11,6 @@ import {
   UseGuards,
   UseInterceptors,
   ForbiddenException,
-  FileTypeValidator,
-  MaxFileSizeValidator,
-  ParseFilePipe,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../auth/decorator';
@@ -68,7 +65,7 @@ export class AbnormalEventController {
     reqUser: { id: string; email: string; role: string },
     @Body() eventDto: AbnormalEventDto,
     @UploadedFiles()
-    event_images?: Array<Express.Multer.File>,
+    event_images: Array<Express.Multer.File>,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');

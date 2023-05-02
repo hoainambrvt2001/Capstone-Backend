@@ -40,7 +40,7 @@ export class OrganizationService {
       );
 
       return {
-        status: 200,
+        status_code: 200,
         data: orgs,
         total: totalOrgs,
         page: options.skip + 1,

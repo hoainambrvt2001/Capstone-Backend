@@ -6,7 +6,9 @@ import {
 } from '../../schemas/request-access.schema';
 import { RequestAccessController } from './request-access.controller';
 import { RequestAccessService } from './request-access.service';
-// import { MqttService } from '../mqtt/mqtt.service';
+import { MqttModule } from 'src/services/mqtt/mqtt.module';
+import { MqttService } from 'src/services/mqtt/mqtt.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,8 +18,10 @@ import { RequestAccessService } from './request-access.service';
         schema: RequestAccessSchema,
       },
     ]),
+    MqttModule,
+    ConfigModule
   ],
   controllers: [RequestAccessController],
-  providers: [RequestAccessService],
+  providers: [RequestAccessService, MqttService],
 })
 export class RequestAccessModule {}

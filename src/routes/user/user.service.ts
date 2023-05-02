@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -31,8 +34,7 @@ export class UserService {
         filters.role_id = ROLE.SUBSCRIBER;
 
       if (queryString) {
-        const reg = new RegExp(queryString, 'i');
-        filters.name = reg;
+        filters.name = new RegExp(queryString, 'i');
       }
 
       //** Determine options in find() */
@@ -54,7 +56,7 @@ export class UserService {
       );
 
       return {
-        status: 200,
+        status_code: 200,
         data: users,
         total: totalUser,
         page: options.skip + 1,
@@ -75,9 +77,20 @@ export class UserService {
         .populate('role', 'name')
         .select('-password -__v');
 
+      if (!user)
+        throw new ForbiddenException(
+          'The user does not exist in the system.',
+        );
+
       return {
         status_code: 200,
-        data: user,
+        data: {
+          ...user,
+          photo_url: user.photo_url ? user.photo_url : '',
+          phone_number: user.phone_number
+            ? user.phone_number
+            : '',
+        },
       };
     } catch (e) {
       console.log(e);

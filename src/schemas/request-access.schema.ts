@@ -29,6 +29,12 @@ class RequestAccess {
 
   @Prop({
     required: true,
+    type: String,
+  })
+  user_name: string;
+
+  @Prop({
+    required: true,
     type: mongoose.Schema.Types.Date,
     default: Date.now(),
   })
@@ -62,11 +68,6 @@ RequestAccessSchema.virtual('user', {
   foreignField: '_id',
   justOne: true,
 });
-
-RequestAccessSchema.index(
-  { organization_id: 1, user_id: 1 },
-  { unique: true },
-);
 
 export {
   RequestAccessDocument,
