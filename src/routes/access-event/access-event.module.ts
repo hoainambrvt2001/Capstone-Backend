@@ -10,7 +10,6 @@ import { StorageModule } from 'src/services/storage/storage.module';
 import { MqttModule } from 'src/services/mqtt/mqtt.module';
 import { ConfigModule } from '@nestjs/config';
 import { Room, RoomSchema } from 'src/schemas/room.schema';
-import { AbnormalEventService } from '../abnormal-event/abnormal-event.service';
 import { AbnormalEventModule } from '../abnormal-event/abnormal-event.module';
 
 @Module({
