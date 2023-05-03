@@ -4,6 +4,7 @@ import {
   RequestAccess,
   RequestAccessSchema,
 } from '../../schemas/request-access.schema';
+import { User, UserSchema } from 'src/schemas/user.schema';
 import { RequestAccessController } from './request-access.controller';
 import { RequestAccessService } from './request-access.service';
 import { MqttModule } from 'src/services/mqtt/mqtt.module';
@@ -14,12 +15,16 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     MongooseModule.forFeature([
       {
+        name: User.name,
+        schema: UserSchema,
+      },
+      {
         name: RequestAccess.name,
         schema: RequestAccessSchema,
       },
     ]),
     MqttModule,
-    ConfigModule
+    ConfigModule,
   ],
   controllers: [RequestAccessController],
   providers: [RequestAccessService, MqttService],

@@ -14,6 +14,7 @@ import {
 import mongoose, { Model } from 'mongoose';
 import { ROLE } from '../../utils/constants';
 import { add } from 'date-fns';
+import * as generator from 'generate-password';
 
 @Injectable()
 export class AuthService {
@@ -95,7 +96,59 @@ export class AuthService {
     });
   }
 
-  // async registerHardware(hardwareDto: { id: string }) {}
+  async registerHardware(hardwareDto: {
+    id: string;
+    name: string;
+  }) {
+    try {
+      // Generate the random password for hardware user:
+      const password = generator.generate({
+        length: 12,
+        numbers: true,
+        symbols: true,
+        strict: true,
+      });
+      const hashPassword = await argon.hash(password);
+      // Save the new user in the database:
+      const hardwareUser = {
+        email: `${hardwareDto.name
+          .replace(/\s/g, '')
+          .toLowerCase()}-${hardwareDto.id}@example.com`,
+        password: hashPassword,
+        name: hardwareDto.name,
+        phone_number: '',
+        photo_url: '',
+        registered_faces: [],
+        organization_access_permissions: [],
+        role_id: new mongoose.Types.ObjectId(ROLE.ADMIN),
+      };
+      const createdHardwareUser =
+        await this.userModel.create(hardwareUser);
+      // Send back the token:
+      const secret = this.config.get('JWT_SECRET');
+      const token = await this.jwt.signAsync(
+        {
+          sub: createdHardwareUser.id,
+          email: createdHardwareUser.email,
+          role: 'admin',
+        },
+        {
+          secret: secret,
+        },
+      );
+      return {
+        status_code: 201,
+        data: {
+          token: token,
+          organization_id: '6413ebf956917f74591468fa',
+          room_id: '6413ebf956917f74591468fd',
+        },
+      };
+    } catch (error) {
+      console.log(error);
+      throw new ForbiddenException('Credentials taken.');
+    }
+  }
 
   async signToken(user: any): Promise<object> {
     const payload = {

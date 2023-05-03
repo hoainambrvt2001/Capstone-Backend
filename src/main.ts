@@ -22,6 +22,6 @@ async function bootstrap() {
     }),
   );
   app.setViewEngine('hbs');
-  await app.listen(3333);
+  await app.listen(parseInt(process.env.PORT) || 3333);
 }
 bootstrap();

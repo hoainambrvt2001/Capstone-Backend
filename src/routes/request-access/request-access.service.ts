@@ -7,7 +7,11 @@ import mongoose, { Model } from 'mongoose';
 import {
   RequestAccess,
   RequestAccessDocument,
-} from '../../schemas/request-access.schema';
+} from 'src/schemas/request-access.schema';
+import {
+  User,
+  UserDocument,
+} from 'src/schemas/user.schema';
 import {
   RequestAccessDto,
   RequestAccessUpdateDto,
@@ -21,6 +25,9 @@ export class RequestAccessService {
   constructor(
     @InjectModel(RequestAccess.name)
     private requestModel: Model<RequestAccessDocument>,
+
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
 
     private configService: ConfigService,
 
@@ -135,7 +142,7 @@ export class RequestAccessService {
         user_name: requestAccessDto.user_name,
         requested_time: requestAccessDto.requested_time,
         note: requestAccessDto.note,
-        status: REQUEST_ACCESS_STATUS.PENDING,
+        status: REQUEST_ACCESS_STATUS.ACCEPTED,
       };
       // Check if the request of that user is pending or accepted:
       const previous_requests: Array<any> =
@@ -148,7 +155,9 @@ export class RequestAccessService {
       for (const previous_request of previous_requests) {
         if (
           previous_request.status ===
-          REQUEST_ACCESS_STATUS.PENDING
+            REQUEST_ACCESS_STATUS.PENDING ||
+          previous_request.status ===
+            REQUEST_ACCESS_STATUS.ACCEPTED
         ) {
           isPendingOrAccepted = true;
           break;
@@ -162,6 +171,18 @@ export class RequestAccessService {
       // Store a new request to MongoDB:
       const createdRequest = await this.requestModel.create(
         requestAccessData,
+      );
+      // Update organization permissions to user:
+      const updatedUser = await this.userModel.updateOne(
+        {
+          _id: requestAccessData.user_id,
+        },
+        {
+          $push: {
+            organization_access_permissions:
+              requestAccessData.organization_id,
+          },
+        },
       );
       // Notify the hardware about new user:
       const topic = this.configService.get<string>(

@@ -3,17 +3,20 @@
   "env": {
     "DATABASE_URL": "mongodb+srv://namvo:qZ8ERea7Vd4Dhcxj@cluster0.ibtpkkm.mongodb.net/maindb?retryWrites=true&w=majority",
     "JWT_SECRET": "access-control-secret",
-    "FIREBASE_API_KEY": "AIzaSyC-0ivISx5ANuUTlvfgEzybeKv2siwgCao",
-    "FIREBASE_AUTH_DOMAIN": "dacn-ec907.firebaseapp.com",
-    "FIREBASE_DATABASE_URL": "",
-    "FIREBASE_PROJECT_ID": "dacn-ec907",
-    "FIREBASE_STORAGE_BUCKET": "dacn-ec907.appspot.com",
-    "FIREBASE_MESSAGING_SENDER_ID": "1009737711764",
-    "FIREBASE_APP_ID": "1:1009737711764:web:dde8cc0a34c98cdd023481",
     "MAIL_HOST": "smtp.gmail.com",
     "MAIL_USER": "nam.vo.katzebrvt@gmail.com",
     "MAIL_PASSWORD": "rkkljwdfbvogvcfg",
-    "MAIL_FROM": "nam.vo.katzebrvt@gmail.com"
+    "MAIL_FROM": "nam.vo.katzebrvt@gmail.com",
+    "ADAFRUIT_MQTT_HOST": "io.adafruit.com",
+    "ADAFRUIT_MQTT_PORT": "1883",
+    "ADAFRUIT_MQTT_HARDWARE_TOPIC": "izayazuna/feeds/hardware-communication",
+    "ADAFRUIT_MQTT_ADMIN_TOPIC": "izayazuna/feeds/admin-website-communication",
+    "ADAFRUIT_MQTT_USERNAME": "izayazuna",
+    "ADAFRUIT_MQTT_PASSWORD": "aio_vaJB67tStJxii6ryE1GkQQ8kQEE3",
+    "PROJECT_ID": "storied-epigram-383903",
+    "PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCq+N1h+WACG2+K\nXc3Tk77fNokj1qKLymGikSzizTbwcIBugvDnsTux8f9VA87IHkuCmRhOe1WcV2n7\nBUnq1FJ+KAribSqW01yFY3OSkZjbhKzUO0Ue0T+ly2gsS4ucO3r1xuJ79ozp94Al\n+hUkDB9KBXIQyfh4idpmTt25h+aLP9nOD4gZa+xako11iZmKxcdIwrKhi/Mw08oo\nH0VHrxLABqfz4ecMyCb+YERoJpznErL+tJg0ZEl989hilfgNBq1AFvCItElkT+Wh\nvtARlUJ1zUknBCtiAnoggHyUkIG6eKe2XlXBLThSVuVPD2tj0hdX2JwJndQpLusn\ntxlEi/XjAgMBAAECggEABlqYeeoSxTOQGzME9jQdlWbpTh4Wn4J679fcfZwlXPi8\nyt6bwRCOH4YgHPLba71aMwwpNGBTBXUeMePcSKu6ftF3AGAQzLJvCs6Up69dO6D3\nor+GSV561zQXkkpr32U6f1JiJKmFb2moAopxcmdc7S1zfQyGxmm8ixthyvQNkcJT\nKFlV6NHjBU+LelZGstodznpfRfpgsKAVGNvTAkUYhsyihFDhuwhlj9z31E3xLj3R\nJs7yjvt1YzGJRwFSH9XLRK+nlAprDr/exf7HOsLhEnTSMS74K/PcuztrLC66I7U+\nw7xSNuUF6aPOiS9yU4PqxXkYmIRuzYk6uof6PR6kgQKBgQDXYarMcbYOPvLT4rpo\nBMvNnJypx2v9cUwDdwqsCoyCgksW7UGFMzbdYb1IwhWhBlMP8/rcsSqGXGojS93b\ngunOC6+DNibiWyGPyS7PSdubduttBM5dP3wwQ1Ln+Udu4hMOFJRCt/aHkC+hrjEc\nhvf0BUFjGUj5YlZH+RyCRLlJwQKBgQDLNyvundYq86NdqSX261IfVDqSau0m+AND\nW2FIKPVIbs0xCWR69v/nk/3257kqxGZEoi1Il0yz+MszYzxPSmkQnY0LEBBbk46L\nhpCQpb+lYjyAKbdKvfY/Y2Lfh/DiLeKOCsEGdddU/SJGis/5eSsaCDPfUlW8pNFP\n4s5nExIAowKBgEE+v+vQ4pKsNQlE3K0YDtkJgVfZJniPMrS2AhCd3XTHnZGja767\nBfrIWfvJd53g+ZaSlUL3lGdBZZGtsNaHcOZPGesIo3zcmG0jR7/ZouIUgzryQsVy\nrt879ch59k67w4P3bfZMHi1w200CJLR8mm5cjTNE/Js3U+XXq/A2e17BAoGAFRg2\nDEAAIldGJwvO8BG/ZZcluVs2IOxv0kcjEw2FYK53yFZUQttu9wgKvd2SABmBEDDR\niI6EHM5/sWbktMphm6LvKC3TtN3dVyhxy0IZYb6PzzIFX9HWRQA5HEENRT1EHkCJ\nhvUmlCDutOnl6tykF8CwOcdfNQTa4XMGv/Zf0QcCgYAhP3vmmemjkVVbrzznQ87h\ngqBSWnlLpayA48uHkR5e9C0/fGFCd/oSSQSEq/EX/VlQwQj5HsXIJLjdzGc/5HQZ\nCpyvQvYVqxXvhqzQEV/g1or7s2LLJq1SGA8jNo2X7xQHzZ7IEchcVE8Zdk3AW1pd\nRtQogOPwae6DWbBkccLsqQ==\n-----END PRIVATE KEY-----\n",
+    "CLIENT_EMAIL": "storied-epigram-383903@appspot.gserviceaccount.com",
+    "STORAGE_MEDIA_BUCKET": "dacn-storage"
   },
   "builds": [
     {

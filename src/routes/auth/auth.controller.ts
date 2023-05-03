@@ -30,9 +30,15 @@ export class AuthController {
     return this.authService.loginIn(authDto, true);
   }
 
-  // // ** POST /hardware/register
-  // @Post('hardware/register')
-  // registerHardware(@Body() hardwareDto: { id: string }) {
-  //   return this.authService.registerHardware(hardwareDto);
-  // }
+  // ** POST /auth/hardware/signup
+  @Post('hardware/signup')
+  registerHardware(
+    @Body()
+    hardwareDto: {
+      id: string;
+      name: string;
+    },
+  ) {
+    return this.authService.registerHardware(hardwareDto);
+  }
 }
