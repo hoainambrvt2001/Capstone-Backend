@@ -39,6 +39,20 @@ export enum MQTT_MESSAGE_TYPE {
   ABNOMAL_STRANGER = 'ABNORMAL_EVENT_STRANGER',
 }
 
+export enum ABNORMAL_EVENT_REPORT_MODE {
+  TODAY = '1d',
+  HALF_MONTH = '15ds',
+  MONTH = '1m',
+  HALF_YEAR = '6ms',
+  YEAR = '1y',
+  FIVE_YEARS = '5yrs',
+}
+
+export enum SORT_BY {
+  TIME_ACS = 'time-asc',
+  TIME_DESC = 'time-desc',
+}
+
 export const DAY_OF_WEEK = {
   '0': 'Su',
   '1': 'Mo',

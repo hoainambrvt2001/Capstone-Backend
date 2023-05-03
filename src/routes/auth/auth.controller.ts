@@ -29,4 +29,10 @@ export class AuthController {
   loginInAdmin(@Body() authDto: AuthDto) {
     return this.authService.loginIn(authDto, true);
   }
+
+  // // ** POST /hardware/register
+  // @Post('hardware/register')
+  // registerHardware(@Body() hardwareDto: { id: string }) {
+  //   return this.authService.registerHardware(hardwareDto);
+  // }
 }

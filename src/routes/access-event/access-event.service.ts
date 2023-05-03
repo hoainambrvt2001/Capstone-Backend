@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import {
   ABNORMAL_EVENT_TYPE,
+  SORT_BY,
   StoredImage,
 } from '../../utils/constants';
 import {
@@ -42,6 +43,7 @@ export class AccessEventService {
     orgId: string,
     roomId: string,
     guest: boolean,
+    sort: string,
   ) {
     try {
       // Determine filters in find()
@@ -58,9 +60,18 @@ export class AccessEventService {
         skip: page ? parseInt(page) - 1 : 0,
       };
 
+      const sortOptions: any = {};
+      if (sort) {
+        if (sort === SORT_BY.TIME_ACS)
+          sortOptions.accessed_time = 1;
+        if (sort === SORT_BY.TIME_DESC)
+          sortOptions.accessed_time = -1;
+      }
+
       // Find access events
       const access_events = await this.eventModel
         .find(filters, null, options)
+        .sort(sortOptions)
         .populate('organization', '_id name')
         .populate('room', '_id name')
         .populate('user', '_id name');

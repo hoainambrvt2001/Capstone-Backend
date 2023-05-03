@@ -50,11 +50,6 @@ export class UserController {
     return this.userService.getUserById(uid);
   }
 
-  @Get('me')
-  getMe(@GetUser('id') uid: string) {
-    return this.userService.getUserById(uid);
-  }
-
   @Post()
   createUser(
     @GetUser()
@@ -89,5 +84,10 @@ export class UserController {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
     return this.userService.deleteUserById(userId);
+  }
+
+  @Get('me')
+  getMe(@GetUser('id') uid: string) {
+    return this.userService.getUserById(uid);
   }
 }

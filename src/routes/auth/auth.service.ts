@@ -95,6 +95,8 @@ export class AuthService {
     });
   }
 
+  // async registerHardware(hardwareDto: { id: string }) {}
+
   async signToken(user: any): Promise<object> {
     const payload = {
       sub: user.id,

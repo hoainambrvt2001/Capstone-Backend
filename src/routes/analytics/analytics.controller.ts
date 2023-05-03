@@ -1,35 +1,23 @@
 import {
+  CacheInterceptor,
   Controller,
   ForbiddenException,
   Get,
   Param,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { AnalyticsService } from './analytics.service';
-import { RoomService } from '../room/room.service';
 
 @UseGuards(JwtGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(
-    private analyticsService: AnalyticsService,
-    private roomService: RoomService,
-  ) {}
+  constructor(private analyticsService: AnalyticsService) {}
 
-  @Get('/room-status/:id')
-  getRoomStatus(
-    @GetUser()
-    reqUser: { id: string; email: string; role: string },
-    @Param('id') roomId: string,
-  ) {
-    if (reqUser.role != 'admin')
-      throw new ForbiddenException('Forbidden resource');
-    return this.roomService.getRoomById(roomId);
-  }
-
+  @UseInterceptors(CacheInterceptor)
   @Get('/all-reports/:id')
   getAllReports(
     @GetUser()
@@ -42,12 +30,11 @@ export class AnalyticsController {
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.analyticsService.getVisitorsByDayReport(
-      roomId,
-    );
+    return this.analyticsService.getAllReports(roomId);
   }
 
   @Get('/visitors-by-day/:id')
+  @UseInterceptors(CacheInterceptor)
   getVisitorsByDayReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
@@ -61,7 +48,8 @@ export class AnalyticsController {
   }
 
   @Get('/abnormal-events/:id')
-  getAbnormalEventReport(
+  @UseInterceptors(CacheInterceptor)
+  getAbnormalEventsReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') roomId: string,
@@ -69,7 +57,7 @@ export class AnalyticsController {
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.analyticsService.getAbnormalEventReport(
+    return this.analyticsService.getAbnormalEventsReport(
       roomId,
       mode,
     );

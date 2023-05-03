@@ -34,6 +34,7 @@ export class AccessEventController {
     @Query('organization') orgId?: string,
     @Query('room') roomId?: string,
     @Query('guest') guest?: boolean,
+    @Query('sort') sort?: string,
   ) {
     return this.eventService.getListAccessEvents(
       limit,
@@ -42,6 +43,7 @@ export class AccessEventController {
       orgId,
       roomId,
       guest,
+      sort,
     );
   }
 

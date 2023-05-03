@@ -26,6 +26,7 @@ import {
   AccessEventDocument,
 } from '../../schemas/access-event.schema';
 import {
+  ABNORMAL_EVENT_REPORT_MODE,
   ABNORMAL_EVENT_TYPE,
   DAY_OF_WEEK,
 } from '../../utils/constants';
@@ -40,6 +41,27 @@ export class AnalyticsService {
     private accessEventModel: Model<AccessEventDocument>,
   ) {}
 
+  async getAllReports(roomId: string) {
+    try {
+      const { data: vistorsByDayReport } =
+        await this.getVisitorsByDayReport(roomId);
+      const { data: abnormalEventsReport } =
+        await this.getAbnormalEventsReport(
+          roomId,
+          ABNORMAL_EVENT_REPORT_MODE.MONTH,
+        );
+      return {
+        status_code: 200,
+        data: {
+          vistors_by_days_report: vistorsByDayReport,
+          abnormal_event_report: abnormalEventsReport,
+        },
+      };
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getVisitorsByDayReport(roomId: string) {
     try {
       // 0: Sunday, 1: Monday, ... 6: Saturday.
@@ -51,7 +73,7 @@ export class AnalyticsService {
         endToDate,
         startFromDate,
       );
-      let returnData = {};
+      let vistorsByDays = {};
       let currentDate = startFromDate;
       for (let i = 0; i < 7; i++) {
         if (i <= rangeDate) {
@@ -66,21 +88,19 @@ export class AnalyticsService {
                     : endOfDay(currentDate),
               },
             });
-          returnData[
+          vistorsByDays[
             DAY_OF_WEEK[i + 1 <= 6 ? i + 1 : '0']
           ] = numberOfVisitor;
           currentDate = addDays(currentDate, 1);
         } else {
-          returnData[
+          vistorsByDays[
             DAY_OF_WEEK[i + 1 <= 6 ? i + 1 : '0']
           ] = 0;
         }
       }
       return {
         status_code: 200,
-        data: {
-          visitors_by_day: returnData,
-        },
+        data: vistorsByDays,
       };
     } catch (e) {
       console.log(e);
@@ -88,7 +108,7 @@ export class AnalyticsService {
     }
   }
 
-  async getAbnormalEventReport(
+  async getAbnormalEventsReport(
     roomId: string,
     mode: string,
   ) {
@@ -96,13 +116,15 @@ export class AnalyticsService {
       const currDate = new Date();
       let intervals: Date[];
       let callback: (param: Date) => string;
-      if (mode == '1d') {
+      if (mode == ABNORMAL_EVENT_REPORT_MODE.TODAY) {
         intervals = eachHourOfInterval({
           start: startOfDay(currDate),
           end: currDate,
         });
         callback = (param: Date) => format(param, 'HH:mm');
-      } else if (mode == '15ds') {
+      } else if (
+        mode == ABNORMAL_EVENT_REPORT_MODE.HALF_MONTH
+      ) {
         intervals = eachDayOfInterval(
           {
             start: subDays(currDate, 15),
@@ -112,7 +134,7 @@ export class AnalyticsService {
         );
         intervals.push(currDate);
         callback = (param: Date) => format(param, 'dd/MM');
-      } else if (mode == '1m') {
+      } else if (mode == ABNORMAL_EVENT_REPORT_MODE.MONTH) {
         intervals = eachDayOfInterval(
           {
             start: subMonths(currDate, 1),
@@ -122,7 +144,9 @@ export class AnalyticsService {
         );
         intervals.push(currDate);
         callback = (param: Date) => format(param, 'dd/MM');
-      } else if (mode == '6ms') {
+      } else if (
+        mode == ABNORMAL_EVENT_REPORT_MODE.HALF_YEAR
+      ) {
         intervals = eachWeekOfInterval(
           {
             start: subMonths(currDate, 6),
@@ -132,14 +156,16 @@ export class AnalyticsService {
         );
         intervals.push(currDate);
         callback = (param: Date) => format(param, 'dd/MM');
-      } else if (mode == '1y') {
+      } else if (mode == ABNORMAL_EVENT_REPORT_MODE.YEAR) {
         intervals = eachMonthOfInterval({
           start: subYears(currDate, 1),
           end: currDate,
         });
         intervals.push(currDate);
         callback = (param: Date) => format(param, 'dd/MM');
-      } else if (mode == '5ys') {
+      } else if (
+        mode == ABNORMAL_EVENT_REPORT_MODE.FIVE_YEARS
+      ) {
         intervals = eachQuarterOfInterval({
           start: subYears(currDate, 5),
           end: currDate,
