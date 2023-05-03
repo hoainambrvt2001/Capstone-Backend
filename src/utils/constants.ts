@@ -34,6 +34,11 @@ export enum REQUEST_ACCESS_STATUS {
   CANCELED = 'canceled',
 }
 
+export enum MQTT_MESSAGE_TYPE {
+  ABNORMAL_OVERCROWD = 'ABNORMAL_EVENT_OVERCROWD',
+  ABNOMAL_STRANGER = 'ABNORMAL_EVENT_STRANGER',
+}
+
 export const DAY_OF_WEEK = {
   '0': 'Su',
   '1': 'Mo',

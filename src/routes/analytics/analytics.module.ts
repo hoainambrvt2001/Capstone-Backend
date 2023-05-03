@@ -8,17 +8,15 @@ import {
   AccessEvent,
   AccessEventSchema,
 } from '../../schemas/access-event.schema';
-import {
-  RoomStatus,
-  RoomStatusSchema,
-} from '../../schemas/room-status.schema';
+import { Room, RoomSchema } from 'src/schemas/room.schema';
 import { AnalyticsController } from './analytics.controller';
 import { AnalyticsService } from './analytics.service';
+import { RoomService } from '../room/room.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: RoomStatus.name, schema: RoomStatusSchema },
+      { name: Room.name, schema: RoomSchema },
       {
         name: AbnormalEvent.name,
         schema: AbnormalEventSchema,
@@ -30,6 +28,6 @@ import { AnalyticsService } from './analytics.service';
     ]),
   ],
   controllers: [AnalyticsController],
-  providers: [AnalyticsService],
+  providers: [AnalyticsService, RoomService],
 })
 export class AnalyticsModule {}

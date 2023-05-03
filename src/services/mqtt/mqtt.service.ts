@@ -36,40 +36,57 @@ export class MqttService {
       reconnectPeriod: 1000,
     });
 
-    // this.mqttClient.on('connect', () => {
-    //   if (this.mqttClient) {
-    //     const topic = this.configService.get<string>(
-    //       'ADAFRUIT_MQTT_HARDWARE_TOPIC',
-    //     );
-    //     this.mqttClient.subscribe(topic, (error) => {
-    //       console.log('Connected to AdafruitMQTT');
-    //       if (error)
-    //         console.log('Subscribe to topics error', error);
-    //     });
-    //   }
-    // });
+    this.mqttClient.on('connect', () => {
+      console.log('Connected to AdafruitMQTT.');
+    });
 
     this.mqttClient.on('message', (topic, message) => {
       console.log(
-        `Received message: ${message} on Topic: ${topic}`,
+        `Received message: ${message} on Topic: ${topic}.`,
       );
     });
 
     this.mqttClient.on('reconnect', () => {
-      console.log('Reconnecting to AdafruitMQTT');
+      console.log('Reconnecting to AdafruitMQTT.');
     });
 
     this.mqttClient.on('error', () => {
-      console.log('Error in connecting to AdafruitMQTT');
+      console.log('Error in connecting to AdafruitMQTT.');
       this.mqttClient.end();
     });
   }
 
-  publish(topic: string, payload: string): string {
-    console.log(
-      `Publishing to topic: ${topic} with payload: ${payload}`,
-    );
-    this.mqttClient.publish(topic, payload);
-    return `Publishing to ${topic}`;
+  async publish(
+    topic: string,
+    payload: string,
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.mqttClient.publish(topic, payload);
+        resolve(
+          `Publishing to topic: ${topic} with payload: ${payload}`,
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async subscribe(topic: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!this.mqttClient || !this.mqttClient.connected) {
+        reject('Error in connecting to AdafruitMQTT');
+      }
+      this.mqttClient.subscribe(topic, (error) => {
+        console.log(
+          `Start listening to ${topic} topic of AdafruitMQTT.`,
+        );
+        resolve(
+          `Start listening to ${topic} topic of AdafruitMQTT.`,
+        );
+        if (error)
+          reject(`Subscribe to topics error: ${error}`);
+      });
+    });
   }
 }

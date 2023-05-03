@@ -2,19 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import {
-  RoomStatus,
-  RoomStatusDocument,
-} from '../../schemas/room-status.schema';
-import { StoredImage } from '../../utils/constants';
-import {
-  AccessEvent,
-  AccessEventDocument,
-} from '../../schemas/access-event.schema';
+  ABNORMAL_EVENT_TYPE,
+  StoredImage,
+} from '../../utils/constants';
 import {
   AccessEventDto,
   AccessEventUpdateDto,
 } from './dto';
+import {
+  Room,
+  RoomDocument,
+} from 'src/schemas/room.schema';
+import {
+  AccessEvent,
+  AccessEventDocument,
+} from '../../schemas/access-event.schema';
 import { StorageService } from 'src/services/storage/storage.service';
+import { AbnormalEventService } from '../abnormal-event/abnormal-event.service';
+import { AbnormalEventDto } from '../abnormal-event/dto';
 
 @Injectable()
 export class AccessEventService {
@@ -22,12 +27,13 @@ export class AccessEventService {
     @InjectModel(AccessEvent.name)
     private eventModel: Model<AccessEventDocument>,
 
-    @InjectModel(RoomStatus.name)
-    private roomStatusModel: Model<RoomStatusDocument>,
+    @InjectModel(Room.name)
+    private roomModel: Model<RoomDocument>,
 
-    private storageService: StorageService
+    private storageService: StorageService,
 
-    ) {}
+    private abnormalEventService: AbnormalEventService,
+  ) {}
 
   async getListAccessEvents(
     limit: string,
@@ -104,14 +110,15 @@ export class AccessEventService {
     event_images: Array<Express.Multer.File>,
   ) {
     try {
-      let uploadedImages : Array<StoredImage> = [];
-      for (const eventImage of event_images) {  
-          const uploadedImage = await this.storageService.save(
-            "events/access_events/",
+      let uploadedImages: Array<StoredImage> = [];
+      for (const eventImage of event_images) {
+        const uploadedImage =
+          await this.storageService.save(
+            'events/access_events/',
             eventImage.originalname,
-            eventImage.buffer
+            eventImage.buffer,
           );
-          uploadedImages.push(uploadedImage);
+        uploadedImages.push(uploadedImage);
       }
 
       const createdEvent = await this.eventModel.create({
@@ -122,18 +129,44 @@ export class AccessEventService {
         ),
       });
 
-      const updatedRoomStatus =
-        await this.roomStatusModel.updateOne(
+      const updatedRoom =
+        await this.roomModel.findOneAndUpdate(
           {
             room_id: eventDto.room_id,
           },
           {
             $inc: {
-              total_visitor: 1,
+              total_visitors: 1,
               current_occupancy: 1,
             },
           },
+          {
+            new: true,
+          },
         );
+
+      if (
+        updatedRoom.current_occupancy >=
+        updatedRoom.max_occupancy
+      ) {
+        const abnormalEventData: AbnormalEventDto = {
+          abnormal_type_id: ABNORMAL_EVENT_TYPE.OVERCROWD,
+          occurred_time: new Date().toISOString(),
+          organization_id: eventDto.organization_id,
+          room_id: eventDto.room_id,
+          note: '',
+        };
+        const additonalInfos = {
+          room_name: updatedRoom.name,
+          current_occupancy: updatedRoom.current_occupancy,
+          max_occupancy: updatedRoom.max_occupancy,
+        };
+        this.abnormalEventService.createEvent(
+          abnormalEventData,
+          [],
+          additonalInfos,
+        );
+      }
 
       return {
         status_code: 201,
@@ -178,6 +211,28 @@ export class AccessEventService {
         data: {
           event_id: eventId,
         },
+      };
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  async updateCheckoutEvent(room_id: string) {
+    try {
+      const updatedRoom = await this.roomModel.updateOne(
+        {
+          room_id: room_id,
+        },
+        {
+          $inc: {
+            current_occupancy: -1,
+          },
+        },
+      );
+      return {
+        status_code: 201,
+        updated_count: updatedRoom.modifiedCount,
       };
     } catch (e) {
       console.log(e);

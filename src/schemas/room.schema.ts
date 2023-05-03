@@ -32,8 +32,17 @@ class Room {
   @Prop({ required: true, type: String })
   name: string;
 
-  @Prop({ required: true, type: Number })
+  @Prop({ required: true, type: Number, default: 1 })
   max_occupancy: number;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  current_occupancy: number;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  total_visitors: number;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  total_abnormal_events: number;
 
   @Prop({
     required: true,

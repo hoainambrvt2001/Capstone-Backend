@@ -176,7 +176,7 @@ export class RequestAccessService {
             requestAccessDto.registered_face_images,
         },
       });
-      this.mqttService.publish(topic, message);
+      await this.mqttService.publish(topic, message);
       return {
         status_code: 201,
         data: {

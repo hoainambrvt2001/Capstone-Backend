@@ -2,10 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-  RoomStatus,
-  RoomStatusDocument,
-} from '../../schemas/room-status.schema';
-import {
   Room,
   RoomDocument,
 } from '../../schemas/room.schema';
@@ -16,9 +12,6 @@ export class RoomService {
   constructor(
     @InjectModel(Room.name)
     private roomModel: Model<RoomDocument>,
-
-    @InjectModel(RoomStatus.name)
-    private roomStatusModel: Model<RoomStatusDocument>,
   ) {}
 
   async search(
@@ -152,17 +145,12 @@ export class RoomService {
 
   async createRoom(roomDto: RoomDto) {
     try {
-      const createdRoom = await this.roomModel.create(
-        roomDto,
-      );
-      const roomStatusDto = {
-        room_id: createdRoom._id,
+      const createdRoom = await this.roomModel.create({
+        ...roomDto,
         current_occupancy: 0,
         total_visitor: 0,
         total_abnormal_events: 0,
-      };
-      const createdRoomStatus =
-        await this.roomStatusModel.create(roomStatusDto);
+      });
       return {
         status_code: 201,
         data: createdRoom,

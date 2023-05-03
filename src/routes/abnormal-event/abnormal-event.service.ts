@@ -13,26 +13,36 @@ import {
 import { MqttService } from '../../services/mqtt/mqtt.service';
 import { StorageService } from 'src/services/storage/storage.service';
 import {
-  RoomStatus,
-  RoomStatusDocument,
-} from '../../schemas/room-status.schema';
-import { StoredImage } from '../../utils/constants';
+  ABNORMAL_EVENT_TYPE,
+  MQTT_MESSAGE_TYPE,
+  StoredImage,
+} from '../../utils/constants';
+import {
+  Room,
+  RoomDocument,
+} from 'src/schemas/room.schema';
 
 @Injectable()
 export class AbnormalEventService {
+  private adminMqttTopic: string;
+
   constructor(
     @InjectModel(AbnormalEvent.name)
     private eventModel: Model<AbnormalEventDocument>,
 
-    @InjectModel(RoomStatus.name)
-    private roomStatusModel: Model<RoomStatusDocument>,
-
-    private mqttService: MqttService,
+    @InjectModel(Room.name)
+    private roomModel: Model<RoomDocument>,
 
     private storageService: StorageService,
 
+    private mqttService: MqttService,
+
     private configService: ConfigService,
-  ) {}
+  ) {
+    this.adminMqttTopic = this.configService.get<string>(
+      'ADAFRUIT_MQTT_ADMIN_TOPIC',
+    );
+  }
 
   async getEvents(
     limit: string,
@@ -113,6 +123,7 @@ export class AbnormalEventService {
   async createEvent(
     eventDto: AbnormalEventDto,
     event_images: Array<Express.Multer.File>,
+    additional_infos: any = {},
   ) {
     try {
       // Upload image to Google Cloud Storage:
@@ -133,30 +144,39 @@ export class AbnormalEventService {
           (image: StoredImage) => image,
         ),
       };
-      const createdEvent = await this.eventModel
-        .create(eventData)
-        .then((event) =>
-          event.populate('organization', '_id name'),
-        )
-        .then((event) =>
-          event.populate('room', '_id name max_occupancy'),
-        );
+      const createdEvent = await this.eventModel.create(
+        eventData,
+      );
       // Update room status:
-      const updatedRoomStatus =
-        await this.roomStatusModel.updateOne(
+      const updatedRoom =
+        await this.roomModel.findOneAndUpdate(
           {
             room_id: eventDto.room_id,
           },
           {
             $inc: { total_abnormal_events: 1 },
           },
+          {
+            new: true,
+          },
         );
       // Notify admin about abnormal event:
-      const topic = this.configService.get<string>(
-        'ADAFRUIT_MQTT_ADMIN_TOPIC',
+      const mqttMessage = JSON.stringify({
+        type:
+          eventDto.abnormal_type_id ===
+          ABNORMAL_EVENT_TYPE.OVERCROWD
+            ? MQTT_MESSAGE_TYPE.ABNORMAL_OVERCROWD
+            : MQTT_MESSAGE_TYPE.ABNOMAL_STRANGER,
+        data: {
+          ...createdEvent,
+          ...additional_infos,
+          room_name: updatedRoom.name,
+        },
+      });
+      await this.mqttService.publish(
+        this.adminMqttTopic,
+        mqttMessage,
       );
-      const message = JSON.stringify(createdEvent);
-      this.mqttService.publish(topic, message);
       return {
         status_code: 201,
         data: createdEvent,

@@ -92,4 +92,15 @@ export class AccessEventController {
       throw new ForbiddenException('Forbidden resource');
     return this.eventService.deleteEventById(eventId);
   }
+
+  @Patch('/checkout/:id')
+  updateCheckoutEvent(
+    @GetUser()
+    reqUser: { id: string; email: string; role: string },
+    @Param('id') room_id: string,
+  ) {
+    if (reqUser.role != 'admin')
+      throw new ForbiddenException('Forbidden resource');
+    return this.eventService.updateCheckoutEvent(room_id);
+  }
 }

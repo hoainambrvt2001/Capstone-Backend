@@ -13,7 +13,6 @@ import { RequestAccessModule } from './routes/request-access/request-access.modu
 import { OrganizationModule } from './routes/organization/organization.module';
 import { RoomModule } from './routes/room/room.module';
 import { AnalyticsModule } from './routes/analytics/analytics.module';
-import { RoomStatusModule } from './routes/room-status/room-status.module';
 import { EmailModule } from './services/email/email.module';
 import { StorageModule } from './services/storage/storage.module';
 import { MqttModule } from './services/mqtt/mqtt.module';
@@ -35,7 +34,6 @@ const config: ConfigService = new ConfigService();
     OrganizationModule,
     RoomModule,
     AnalyticsModule,
-    RoomStatusModule,
     EmailModule,
     StorageModule,
     MqttModule,

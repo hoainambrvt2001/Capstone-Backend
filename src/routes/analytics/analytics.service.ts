@@ -10,16 +10,13 @@ import {
   eachQuarterOfInterval,
   eachWeekOfInterval,
   endOfDay,
-  getHours,
   startOfDay,
-  startOfMonth,
   startOfWeek,
-  startOfYear,
   subDays,
   subMonths,
   subYears,
 } from 'date-fns';
-import mongoose, { Model, Mongoose } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import {
   AbnormalEvent,
   AbnormalEventDocument,
@@ -29,10 +26,6 @@ import {
   AccessEventDocument,
 } from '../../schemas/access-event.schema';
 import {
-  RoomStatus,
-  RoomStatusDocument,
-} from '../../schemas/room-status.schema';
-import {
   ABNORMAL_EVENT_TYPE,
   DAY_OF_WEEK,
 } from '../../utils/constants';
@@ -40,9 +33,6 @@ import {
 @Injectable()
 export class AnalyticsService {
   constructor(
-    @InjectModel(RoomStatus.name)
-    private roomStatusModel: Model<RoomStatusDocument>,
-
     @InjectModel(AbnormalEvent.name)
     private abnormalEventModel: Model<AbnormalEventDocument>,
 
@@ -50,25 +40,7 @@ export class AnalyticsService {
     private accessEventModel: Model<AccessEventDocument>,
   ) {}
 
-  async getRoomStatus(roomId: string) {
-    try {
-      const roomStatus = await this.roomStatusModel
-        .findOne({
-          room_id: roomId,
-        })
-        .populate('room', '_id name max_occupancy');
-
-      return {
-        status_code: 200,
-        data: roomStatus,
-      };
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
-  }
-
-  async getVisitorsByDay(roomId: string) {
+  async getVisitorsByDayReport(roomId: string) {
     try {
       // 0: Sunday, 1: Monday, ... 6: Saturday.
       const endToDate = new Date();
@@ -116,7 +88,10 @@ export class AnalyticsService {
     }
   }
 
-  async getAbnormalEvents(roomId: string, mode: string) {
+  async getAbnormalEventReport(
+    roomId: string,
+    mode: string,
+  ) {
     try {
       const currDate = new Date();
       let intervals: Date[];
@@ -174,7 +149,7 @@ export class AnalyticsService {
       }
       return {
         status_code: 200,
-        data: await this.countEventsEachIntervals(
+        data: await this.getCountEventsEachIntervals(
           roomId,
           intervals,
           callback,
@@ -186,7 +161,7 @@ export class AnalyticsService {
     }
   }
 
-  async countEventsEachIntervals(
+  async getCountEventsEachIntervals(
     roomId: string,
     intervals: Date[],
     callback: (param: Date) => string,
