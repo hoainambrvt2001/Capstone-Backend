@@ -7,6 +7,7 @@ import {
 import { EmailModule } from '../../services/email/email.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { StorageModule } from 'src/services/storage/storage.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserService } from './user.service';
       { name: User.name, schema: UserSchema },
     ]),
     EmailModule,
+    StorageModule,
   ],
   controllers: [UserController],
   providers: [UserService],

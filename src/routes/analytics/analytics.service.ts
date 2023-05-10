@@ -69,9 +69,8 @@ export class AnalyticsService {
       const startFromDate = startOfWeek(endToDate, {
         weekStartsOn: 1,
       });
-      const rangeDate = differenceInCalendarDays(
-        endToDate,
-        startFromDate,
+      const rangeDate = Math.abs(
+        differenceInCalendarDays(endToDate, startFromDate),
       );
       let vistorsByDays = {};
       let currentDate = startFromDate;
@@ -140,7 +139,7 @@ export class AnalyticsService {
             start: subMonths(currDate, 1),
             end: currDate,
           },
-          { step: 2 },
+          { step: 4 },
         );
         intervals.push(currDate);
         callback = (param: Date) => format(param, 'dd/MM');

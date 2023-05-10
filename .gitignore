@@ -37,4 +37,3 @@ lerna-debug.log*
 # Environments:
 google-service-key.json
 vercel.json
-.env

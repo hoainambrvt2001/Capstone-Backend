@@ -74,7 +74,10 @@ export class AccessEventService {
         .sort(sortOptions)
         .populate('organization', '_id name')
         .populate('room', '_id name')
-        .populate('user', '_id name');
+        .populate(
+          'user',
+          '_id name email phone_number photo_url',
+        );
 
       // Calculate total access events
       const total_events = await this.eventModel.count(

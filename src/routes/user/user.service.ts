@@ -8,14 +8,21 @@ import {
   User,
   UserDocument,
 } from '../../schemas/user.schema';
-import { ROLE, STORE_STATUS } from '../../utils/constants';
+import {
+  ROLE,
+  STORE_STATUS,
+  StoredImage,
+} from '../../utils/constants';
 import { UserDto, UserUpdateDto } from './dto';
+import { StorageService } from 'src/services/storage/storage.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+
+    private storageService: StorageService,
   ) {}
 
   async getListUsers(
@@ -26,7 +33,9 @@ export class UserService {
   ) {
     try {
       //** Determine filters in find() */
-      const filters: any = {};
+      const filters: any = {
+        status: STORE_STATUS.AVAIALBE,
+      };
       if (role === 'admin') filters.role_id = ROLE.ADMIN;
       else if (role === 'manager')
         filters.role_id = ROLE.MANAGER;
@@ -84,13 +93,7 @@ export class UserService {
 
       return {
         status_code: 200,
-        data: {
-          ...user,
-          photo_url: user.photo_url ? user.photo_url : '',
-          phone_number: user.phone_number
-            ? user.phone_number
-            : '',
-        },
+        data: user,
       };
     } catch (e) {
       console.log(e);
@@ -98,14 +101,38 @@ export class UserService {
     }
   }
 
-  async createUser(userDto: UserDto) {
+  async createUser(
+    userDto: UserDto,
+    avatar_image?: Express.Multer.File,
+  ) {
     try {
       const createdUser = await this.userModel.create({
         userDto,
       });
+      const returnData: any = {
+        id: createdUser._id,
+        ...userDto,
+      };
+      if (avatar_image) {
+        let uploadedAvatarImage: StoredImage =
+          await this.storageService.save(
+            `users/${createdUser._id}/avatars/`,
+            avatar_image.originalname,
+            avatar_image.buffer,
+          );
+        await this.userModel.updateOne(
+          {
+            id: createdUser._id,
+          },
+          {
+            photo_url: uploadedAvatarImage.url,
+          },
+        );
+        returnData.photo_url = uploadedAvatarImage.url;
+      }
       return {
         status_code: 201,
-        data: { id: createdUser.id, ...userDto },
+        data: returnData,
       };
     } catch (e) {
       console.log(e);
@@ -116,18 +143,54 @@ export class UserService {
   async updateUserById(
     userId: string,
     userDto: UserUpdateDto,
+    images: {
+      face_images?: Express.Multer.File[];
+      avatar_images?: Express.Multer.File[];
+    },
   ) {
     try {
+      let uploadedFaceImages: Array<StoredImage> = [];
+      if (images.face_images) {
+        for (const face_image of images.face_images) {
+          const uploadedFaceImage =
+            await this.storageService.save(
+              `users/${userId}/faces/`,
+              `${userId}-${
+                uploadedFaceImages.length + 1
+              }.jpg`,
+              face_image.buffer,
+            );
+          uploadedFaceImages.push(uploadedFaceImage);
+        }
+      }
+      let uploadedAvatarImages: Array<StoredImage> = [];
+      if (images.avatar_images) {
+        for (const avatar_image of images.avatar_images) {
+          const uploadedAvatarImage =
+            await this.storageService.save(
+              `users/${userId}/avatars/`,
+              avatar_image.originalname,
+              avatar_image.buffer,
+            );
+          uploadedAvatarImages.push(uploadedAvatarImage);
+        }
+      }
+      const updatedUserData = { ...userDto };
+      if (uploadedAvatarImages.length != 0)
+        updatedUserData.photo_url =
+          uploadedAvatarImages[0].url;
+      if (uploadedFaceImages.length != 0)
+        updatedUserData.registered_faces =
+          uploadedFaceImages;
       const updatedUser = await this.userModel.updateOne(
         {
           _id: userId,
         },
-        userDto,
+        updatedUserData,
       );
       return {
         status_code: 201,
-        updated_count: updatedUser.modifiedCount,
-        data: { id: userId, ...userDto },
+        data: { id: userId, ...updatedUserData },
       };
     } catch (e) {
       console.log(e);
@@ -137,12 +200,16 @@ export class UserService {
 
   async deleteUserById(userId: string) {
     try {
-      const deletedUser = await this.userModel.deleteOne({
-        _id: userId,
-      });
+      const deletedUser = await this.userModel.updateOne(
+        {
+          _id: userId,
+        },
+        {
+          status: STORE_STATUS.UNAVAILABLE,
+        },
+      );
       return {
         status_code: 201,
-        deleted_count: deletedUser.deletedCount,
         data: {
           id: userId,
         },
