@@ -168,11 +168,12 @@ export class AbnormalEventService {
             ? MQTT_MESSAGE_TYPE.ABNORMAL_OVERCROWD
             : MQTT_MESSAGE_TYPE.ABNOMAL_STRANGER,
         data: {
-          ...createdEvent,
+          ...eventData,
           ...additional_infos,
           room_name: updatedRoom.name,
         },
       });
+      console.log(mqttMessage);
       await this.mqttService.publish(
         this.adminMqttTopic,
         mqttMessage,
