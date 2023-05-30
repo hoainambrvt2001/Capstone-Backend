@@ -8,21 +8,24 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
-import { MailHelperService } from '../mail-helper/mail-helper.service';
 import { UserDto, UserUpdateDto } from './dto';
 import { UserService } from './user.service';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 
 @UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private mailHelperService: MailHelperService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   @Get()
   getListUsers(
@@ -55,28 +58,46 @@ export class UserController {
   }
 
   @Post()
+  @UseInterceptors(FileInterceptor('avatar_image'))
   createUser(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Body() userDto: UserDto,
+    @UploadedFile() avatar_image?: Express.Multer.File,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.userService.createUser(userDto);
+    return this.userService.createUser(
+      userDto,
+      avatar_image,
+    );
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'face_images', maxCount: 2 },
+      { name: 'avatar_image', maxCount: 1 },
+    ]),
+  )
   updateUserById(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') userId: string,
     @Body() userDto: UserUpdateDto,
+    @UploadedFiles()
+    images: {
+      face_images?: Express.Multer.File[];
+      avatar_images?: Express.Multer.File[];
+    },
   ) {
-    const cond1 = reqUser.role != 'admin';
-    const cond2 = reqUser.id != userId;
-    if (cond1 && cond2)
+    if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.userService.updateUserById(userId, userDto);
+    return this.userService.updateUserById(
+      userId,
+      userDto,
+      images,
+    );
   }
 
   @Delete(':id')
@@ -90,19 +111,31 @@ export class UserController {
     return this.userService.deleteUserById(userId);
   }
 
-  @Get('send/email-confirmation')
-  sendUserConfirmation(
-    @GetUser()
-    reqUser: {
-      id: string;
-      email: string;
-      role: string;
+  @Get('me/information')
+  getMe(@GetUser('id') uid: string) {
+    return this.userService.getUserById(uid);
+  }
+
+  @Post('me/information')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'face_images', maxCount: 2 },
+      { name: 'avatar_images', maxCount: 1 },
+    ]),
+  )
+  updateMe(
+    @GetUser('id') uid: string,
+    @Body() userDto: UserUpdateDto,
+    @UploadedFiles()
+    images: {
+      face_images?: Express.Multer.File[];
+      avatar_images?: Express.Multer.File[];
     },
   ) {
-    if (reqUser.role != 'admin')
-      throw new ForbiddenException('Forbidden resource');
-    return this.mailHelperService.sendUserConfirmation(
-      reqUser.email,
+    return this.userService.updateUserById(
+      uid,
+      userDto,
+      images,
     );
   }
 }

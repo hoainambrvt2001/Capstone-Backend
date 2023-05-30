@@ -4,19 +4,29 @@ import {
   RequestAccess,
   RequestAccessSchema,
 } from '../../schemas/request-access.schema';
+import { User, UserSchema } from 'src/schemas/user.schema';
 import { RequestAccessController } from './request-access.controller';
 import { RequestAccessService } from './request-access.service';
+import { MqttModule } from 'src/services/mqtt/mqtt.module';
+import { MqttService } from 'src/services/mqtt/mqtt.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
+        name: User.name,
+        schema: UserSchema,
+      },
+      {
         name: RequestAccess.name,
         schema: RequestAccessSchema,
       },
     ]),
+    MqttModule,
+    ConfigModule,
   ],
   controllers: [RequestAccessController],
-  providers: [RequestAccessService],
+  providers: [RequestAccessService, MqttService],
 })
 export class RequestAccessModule {}

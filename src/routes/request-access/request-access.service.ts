@@ -1,20 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import {
   RequestAccess,
   RequestAccessDocument,
-} from '../../schemas/request-access.schema';
+} from 'src/schemas/request-access.schema';
+import {
+  User,
+  UserDocument,
+} from 'src/schemas/user.schema';
 import {
   RequestAccessDto,
   RequestAccessUpdateDto,
 } from './dto';
+import { MqttService } from 'src/services/mqtt/mqtt.service';
+import { REQUEST_ACCESS_STATUS } from 'src/utils/constants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RequestAccessService {
   constructor(
     @InjectModel(RequestAccess.name)
     private requestModel: Model<RequestAccessDocument>,
+
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
+    private configService: ConfigService,
+
+    private mqttService: MqttService,
   ) {}
 
   async getListRequests(
@@ -29,17 +46,16 @@ export class RequestAccessService {
       if (status) filters.status = status;
 
       //** Determine options in find() */
+      const limit_option = limit ? limit : 9;
+      const page_option = page ? page - 1 : 0;
       const options: any = {
-        limit: limit ? limit : 9,
-        skip: page ? page - 1 : 0,
+        limit: limit_option,
+        skip: page_option * limit_option,
       };
 
-      //** Determine conditions in populate('user') */
-      // const matches: any = {};
-      // if (queryString) {
-      //   const reg = new RegExp(queryString, 'i');
-      //   matches.name = reg;
-      // }
+      //** Query requests by user_name */
+      if (queryString)
+        filters.user_name = new RegExp(queryString, 'i');
 
       //** Find requests */
       const requests = await this.requestModel
@@ -54,14 +70,14 @@ export class RequestAccessService {
 
       //** Calculate total number of requests */
       const totalRequests = await this.requestModel.count(
-        {},
+        filters,
       );
       const last_page = Math.ceil(
         totalRequests / options.limit,
       );
 
       return {
-        status: 200,
+        status_code: 200,
         data: requests,
         total: totalRequests,
         page: options.skip + 1,
@@ -122,18 +138,73 @@ export class RequestAccessService {
     uid: string,
   ) {
     try {
+      const requestAccessData = {
+        organization_id: requestAccessDto.organization_id,
+        user_id: new mongoose.Types.ObjectId(uid),
+        user_name: requestAccessDto.user_name,
+        requested_time: requestAccessDto.requested_time,
+        note: requestAccessDto.note,
+        status: REQUEST_ACCESS_STATUS.ACCEPTED,
+      };
+      // Check if the request of that user is pending or accepted:
+      const previous_requests: Array<any> =
+        await this.requestModel.find({
+          organization_id:
+            requestAccessData.organization_id,
+          user_id: requestAccessData.user_id,
+        });
+      let isPendingOrAccepted = false;
+      for (const previous_request of previous_requests) {
+        if (
+          previous_request.status ===
+            REQUEST_ACCESS_STATUS.PENDING ||
+          previous_request.status ===
+            REQUEST_ACCESS_STATUS.ACCEPTED
+        ) {
+          isPendingOrAccepted = true;
+          break;
+        }
+      }
+      if (isPendingOrAccepted) {
+        throw new BadRequestException(
+          'Your access-request has been pending or accepted.',
+        );
+      }
+      // Store a new request to MongoDB:
       const createdRequest = await this.requestModel.create(
+        requestAccessData,
+      );
+      // Update organization permissions to user:
+      const updatedUser = await this.userModel.updateOne(
         {
-          ...requestAccessDto,
-          user_id: new mongoose.Types.ObjectId(uid),
+          _id: requestAccessData.user_id,
+        },
+        {
+          $push: {
+            organization_access_permissions:
+              requestAccessData.organization_id,
+          },
         },
       );
+      // Notify the hardware about new user:
+      const topic = this.configService.get<string>(
+        'ADAFRUIT_MQTT_HARDWARE_TOPIC',
+      );
+      const message = JSON.stringify({
+        type: 'NEW_USER_REGISTER',
+        data: {
+          user_id: uid,
+          user_name: requestAccessDto.user_name,
+          registered_face_images:
+            requestAccessDto.registered_face_images,
+        },
+      });
+      await this.mqttService.publish(topic, message);
       return {
         status_code: 201,
         data: {
-          id: createdRequest.id,
-          ...requestAccessDto,
-          status: 'pending',
+          request_id: createdRequest.id,
+          ...requestAccessData,
         },
       };
     } catch (e) {

@@ -2,7 +2,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { join } from 'path';
 
 async function bootstrap() {
   const app =
@@ -23,6 +22,6 @@ async function bootstrap() {
     }),
   );
   app.setViewEngine('hbs');
-  await app.listen(3333);
+  await app.listen(parseInt(process.env.PORT) || 3333);
 }
 bootstrap();

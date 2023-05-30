@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsDateString,
   IsEnum,
   IsMongoId,

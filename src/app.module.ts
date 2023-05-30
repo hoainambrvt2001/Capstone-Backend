@@ -12,10 +12,10 @@ import { RoleModule } from './routes/role/role.module';
 import { RequestAccessModule } from './routes/request-access/request-access.module';
 import { OrganizationModule } from './routes/organization/organization.module';
 import { RoomModule } from './routes/room/room.module';
-import { StreamingModule } from './routes/streaming/streaming.module';
 import { AnalyticsModule } from './routes/analytics/analytics.module';
-import { RoomStatusModule } from './routes/room-status/room-status.module';
-import { MailHelperModule } from './routes/mail-helper/mail-helper.module';
+import { EmailModule } from './services/email/email.module';
+import { StorageModule } from './services/storage/storage.module';
+import { MqttModule } from './services/mqtt/mqtt.module';
 
 const config: ConfigService = new ConfigService();
 
@@ -33,10 +33,10 @@ const config: ConfigService = new ConfigService();
     RequestAccessModule,
     OrganizationModule,
     RoomModule,
-    StreamingModule,
     AnalyticsModule,
-    RoomStatusModule,
-    MailHelperModule,
+    EmailModule,
+    StorageModule,
+    MqttModule,
   ],
 })
 export class AppModule {}

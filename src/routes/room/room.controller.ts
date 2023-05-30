@@ -41,6 +41,7 @@ export class RoomController {
     @Query('page') page?: string,
     @Query('type') type_id?: string,
     @Query('status') status?: string,
+    @Query('q') queryString?: string,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
@@ -49,6 +50,7 @@ export class RoomController {
       page,
       type_id,
       status,
+      queryString,
     );
   }
 

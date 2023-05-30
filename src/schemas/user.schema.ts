@@ -41,6 +41,12 @@ class User {
 
   @Prop({
     required: true,
+    type: [mongoose.Schema.Types.ObjectId],
+  })
+  organization_access_permissions: Array<string>;
+
+  @Prop({
+    required: true,
     type: mongoose.Schema.Types.ObjectId,
   })
   role_id: string;

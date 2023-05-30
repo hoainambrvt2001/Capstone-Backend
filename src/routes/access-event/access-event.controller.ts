@@ -34,6 +34,7 @@ export class AccessEventController {
     @Query('organization') orgId?: string,
     @Query('room') roomId?: string,
     @Query('guest') guest?: boolean,
+    @Query('sort') sort?: string,
   ) {
     return this.eventService.getListAccessEvents(
       limit,
@@ -42,6 +43,7 @@ export class AccessEventController {
       orgId,
       roomId,
       guest,
+      sort,
     );
   }
 
@@ -91,5 +93,28 @@ export class AccessEventController {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
     return this.eventService.deleteEventById(eventId);
+  }
+
+  @Patch('/checkout/:id')
+  updateCheckoutEvent(
+    @GetUser()
+    reqUser: { id: string; email: string; role: string },
+    @Param('id') room_id: string,
+  ) {
+    if (reqUser.role != 'admin')
+      throw new ForbiddenException('Forbidden resource');
+    return this.eventService.updateCheckoutEvent(room_id);
+  }
+
+  @Get('/me/information')
+  getEventByUserId(
+    @GetUser()
+    reqUser: {
+      id: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    return this.eventService.getEventByUserId(reqUser.id);
   }
 }

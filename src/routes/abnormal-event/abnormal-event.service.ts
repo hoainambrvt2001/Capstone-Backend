@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import mongoose, { Model } from 'mongoose';
 import {
   AbnormalEvent,
@@ -9,24 +10,39 @@ import {
   AbnormalEventDto,
   AbnormalEventUpdateDto,
 } from './dto';
-import { FirebaseService } from '../../utils/firebase-service';
+import { MqttService } from '../../services/mqtt/mqtt.service';
+import { StorageService } from 'src/services/storage/storage.service';
 import {
-  RoomStatus,
-  RoomStatusDocument,
-} from '../../schemas/room-status.schema';
-import { StoredImage } from '../../utils/constants';
+  ABNORMAL_EVENT_TYPE,
+  MQTT_MESSAGE_TYPE,
+  StoredImage,
+} from '../../utils/constants';
+import {
+  Room,
+  RoomDocument,
+} from 'src/schemas/room.schema';
 
 @Injectable()
 export class AbnormalEventService {
+  private adminMqttTopic: string;
+
   constructor(
     @InjectModel(AbnormalEvent.name)
     private eventModel: Model<AbnormalEventDocument>,
 
-    @InjectModel(RoomStatus.name)
-    private roomStatusModel: Model<RoomStatusDocument>,
+    @InjectModel(Room.name)
+    private roomModel: Model<RoomDocument>,
 
-    private firebaseService: FirebaseService,
-  ) {}
+    private storageService: StorageService,
+
+    private mqttService: MqttService,
+
+    private configService: ConfigService,
+  ) {
+    this.adminMqttTopic = this.configService.get<string>(
+      'ADAFRUIT_MQTT_ADMIN_TOPIC',
+    );
+  }
 
   async getEvents(
     limit: string,
@@ -50,14 +66,17 @@ export class AbnormalEventService {
           new mongoose.Types.ObjectId(typeId);
 
       // Determine options in find()
+      const limit_option = limit ? parseInt(limit) : 9;
+      const page_option = page ? parseInt(page) - 1 : 0;
       const options: any = {
-        limit: limit ? parseInt(limit) : 9,
-        skip: page ? parseInt(page) - 1 : 0,
+        limit: limit_option,
+        skip: page_option * limit_option,
       };
 
       // Find all filtered abnormal_events:
       const abnormal_events = await this.eventModel
         .find(filters, null, options)
+        .sort({ occurred_time: -1 })
         .populate('organization', '_id name')
         .populate('room', '_id name')
         .populate('abnormal_type', 'name')
@@ -107,32 +126,61 @@ export class AbnormalEventService {
   async createEvent(
     eventDto: AbnormalEventDto,
     event_images: Array<Express.Multer.File>,
+    additional_infos: any = {},
   ) {
     try {
-      const uploadFiles: Array<StoredImage> =
-        await this.firebaseService.uploadImagesToFirebase(
-          event_images,
-          'abnormal-events',
-        );
-
+      // Upload image to Google Cloud Storage:
+      let uploadedImages: Array<StoredImage> = [];
+      for (const eventImage of event_images) {
+        const uploadedImage =
+          await this.storageService.save(
+            'events/abnormal_events/',
+            eventImage.originalname,
+            eventImage.buffer,
+          );
+        uploadedImages.push(uploadedImage);
+      }
+      // Store event to MongoDB:
       const eventData = {
         ...eventDto,
-        images: uploadFiles.map(
-          (item: StoredImage) => item,
+        images: uploadedImages.map(
+          (image: StoredImage) => image,
         ),
       };
       const createdEvent = await this.eventModel.create(
         eventData,
       );
-      const updatedRoomStatus =
-        await this.roomStatusModel.updateOne(
+      // Update room status:
+      const updatedRoom =
+        await this.roomModel.findOneAndUpdate(
           {
             room_id: eventDto.room_id,
           },
           {
             $inc: { total_abnormal_events: 1 },
           },
+          {
+            new: true,
+          },
         );
+      // Notify admin about abnormal event:
+      const mqttMessage = JSON.stringify({
+        type:
+          eventDto.abnormal_type_id ===
+          ABNORMAL_EVENT_TYPE.OVERCROWD
+            ? MQTT_MESSAGE_TYPE.ABNORMAL_OVERCROWD
+            : MQTT_MESSAGE_TYPE.ABNOMAL_STRANGER,
+        data: {
+          ...eventData,
+          ...additional_infos,
+          room_name: updatedRoom.name,
+        },
+      });
+      console.log(mqttMessage);
+      await this.mqttService.publish(
+        this.adminMqttTopic,
+        mqttMessage,
+      );
       return {
         status_code: 201,
         data: createdEvent,

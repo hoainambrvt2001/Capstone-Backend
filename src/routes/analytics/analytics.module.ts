@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   AbnormalEvent,
@@ -8,17 +8,12 @@ import {
   AccessEvent,
   AccessEventSchema,
 } from '../../schemas/access-event.schema';
-import {
-  RoomStatus,
-  RoomStatusSchema,
-} from '../../schemas/room-status.schema';
 import { AnalyticsController } from './analytics.controller';
 import { AnalyticsService } from './analytics.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: RoomStatus.name, schema: RoomStatusSchema },
       {
         name: AbnormalEvent.name,
         schema: AbnormalEventSchema,
@@ -28,6 +23,9 @@ import { AnalyticsService } from './analytics.service';
         schema: AccessEventSchema,
       },
     ]),
+    CacheModule.register({
+      ttl: 10, //  revalidating per 10 seconds
+    }),
   ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],

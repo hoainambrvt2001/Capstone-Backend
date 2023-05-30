@@ -1,10 +1,12 @@
 import {
+  CacheInterceptor,
   Controller,
   ForbiddenException,
   Get,
   Param,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
@@ -15,30 +17,39 @@ import { AnalyticsService } from './analytics.service';
 export class AnalyticsController {
   constructor(private analyticsService: AnalyticsService) {}
 
-  @Get('/room-status/:id')
-  getRoomStatus(
+  @UseInterceptors(CacheInterceptor)
+  @Get('/all-reports/:id')
+  getAllReports(
     @GetUser()
-    reqUser: { id: string; email: string; role: string },
+    reqUser: {
+      id: string;
+      email: string;
+      role: string;
+    },
     @Param('id') roomId: string,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.analyticsService.getRoomStatus(roomId);
+    return this.analyticsService.getAllReports(roomId);
   }
 
   @Get('/visitors-by-day/:id')
-  getVisitorsByDay(
+  @UseInterceptors(CacheInterceptor)
+  getVisitorsByDayReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') roomId: string,
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.analyticsService.getVisitorsByDay(roomId);
+    return this.analyticsService.getVisitorsByDayReport(
+      roomId,
+    );
   }
 
   @Get('/abnormal-events/:id')
-  getAbnormalEvents(
+  @UseInterceptors(CacheInterceptor)
+  getAbnormalEventsReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
     @Param('id') roomId: string,
@@ -46,7 +57,7 @@ export class AnalyticsController {
   ) {
     if (reqUser.role != 'admin')
       throw new ForbiddenException('Forbidden resource');
-    return this.analyticsService.getAbnormalEvents(
+    return this.analyticsService.getAbnormalEventsReport(
       roomId,
       mode,
     );

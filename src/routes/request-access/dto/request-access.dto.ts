@@ -1,5 +1,5 @@
 import {
-  IsDate,
+  IsArray,
   IsDateString,
   IsEnum,
   IsMongoId,
@@ -13,6 +13,14 @@ export class RequestAccessDto {
   @IsMongoId()
   @IsNotEmpty()
   organization_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  user_name: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  registered_face_images: [];
 
   @IsDateString()
   @IsNotEmpty()

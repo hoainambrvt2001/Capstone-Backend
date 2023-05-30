@@ -10,10 +10,6 @@ import {
 } from '../../schemas/room-type.schema';
 import { RoomService } from './room.service';
 import { RoomController } from './room.controller';
-import {
-  RoomStatus,
-  RoomStatusSchema,
-} from '../../schemas/room-status.schema';
 
 @Module({
   imports: [
@@ -26,7 +22,6 @@ import {
         name: RoomType.name,
         schema: RoomTypeSchema,
       },
-      { name: RoomStatus.name, schema: RoomStatusSchema },
     ]),
   ],
   providers: [RoomService],
