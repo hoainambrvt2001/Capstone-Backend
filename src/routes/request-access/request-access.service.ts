@@ -46,9 +46,11 @@ export class RequestAccessService {
       if (status) filters.status = status;
 
       //** Determine options in find() */
+      const limit_option = limit ? limit : 9;
+      const page_option = page ? page - 1 : 0;
       const options: any = {
-        limit: limit ? limit : 9,
-        skip: page ? page - 1 : 0,
+        limit: limit_option,
+        skip: page_option * limit_option,
       };
 
       //** Query requests by user_name */

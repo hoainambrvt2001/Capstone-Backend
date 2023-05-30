@@ -76,9 +76,11 @@ export class RoomService {
       }
 
       // Determine options in find()
+      const limit_option = limit ? parseInt(limit) : 9;
+      const page_option = page ? parseInt(page) - 1 : 0;
       const options: any = {
-        limit: limit ? parseInt(limit) : 9,
-        skip: page ? parseInt(page) - 1 : 0,
+        limit: limit_option,
+        skip: page_option * limit_option,
       };
 
       // Find rooms

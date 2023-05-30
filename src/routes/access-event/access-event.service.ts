@@ -55,12 +55,16 @@ export class AccessEventService {
       if (guest) filters.is_guest = guest;
 
       // Determine options in find()
+      const limit_option = limit ? parseInt(limit) : 9;
+      const page_option = page ? parseInt(page) - 1 : 0;
       const options: any = {
-        limit: limit ? parseInt(limit) : 9,
-        skip: page ? parseInt(page) - 1 : 0,
+        limit: limit_option,
+        skip: page_option * limit_option,
       };
 
-      const sortOptions: any = {};
+      const sortOptions: any = {
+        accessed_time: -1,
+      };
       if (sort) {
         if (sort === SORT_BY.TIME_ACS)
           sortOptions.accessed_time = 1;
@@ -109,6 +113,25 @@ export class AccessEventService {
         .populate('organization', '_id name')
         .populate('room', '_id name')
         .populate('user', '_id name');
+      return {
+        status_code: 200,
+        data: event,
+      };
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  async getEventByUserId(userId: string) {
+    try {
+      const event = await this.eventModel
+        .find({
+          user_id: userId,
+        })
+        .populate('organization', '_id name')
+        .populate('room', '_id name')
+        .select('-__v -createdAt -updatedAt -is_guest');
       return {
         status_code: 200,
         data: event,

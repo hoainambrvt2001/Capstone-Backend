@@ -111,12 +111,12 @@ export class UserController {
     return this.userService.deleteUserById(userId);
   }
 
-  @Get('info/me')
+  @Get('me/information')
   getMe(@GetUser('id') uid: string) {
     return this.userService.getUserById(uid);
   }
 
-  @Post('info/me')
+  @Post('me/information')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'face_images', maxCount: 2 },
@@ -132,7 +132,6 @@ export class UserController {
       avatar_images?: Express.Multer.File[];
     },
   ) {
-    console.log('Call me');
     return this.userService.updateUserById(
       uid,
       userDto,

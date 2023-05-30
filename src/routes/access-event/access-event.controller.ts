@@ -105,4 +105,16 @@ export class AccessEventController {
       throw new ForbiddenException('Forbidden resource');
     return this.eventService.updateCheckoutEvent(room_id);
   }
+
+  @Get('/me/information')
+  getEventByUserId(
+    @GetUser()
+    reqUser: {
+      id: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    return this.eventService.getEventByUserId(reqUser.id);
+  }
 }
