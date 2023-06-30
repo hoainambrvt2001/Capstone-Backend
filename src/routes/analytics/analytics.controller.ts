@@ -6,7 +6,6 @@ import {
   Param,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
@@ -17,7 +16,6 @@ import { AnalyticsService } from './analytics.service';
 export class AnalyticsController {
   constructor(private analyticsService: AnalyticsService) {}
 
-  @UseInterceptors(CacheInterceptor)
   @Get('/all-reports/:id')
   getAllReports(
     @GetUser()
@@ -34,7 +32,6 @@ export class AnalyticsController {
   }
 
   @Get('/visitors-by-day/:id')
-  @UseInterceptors(CacheInterceptor)
   getVisitorsByDayReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },
@@ -48,7 +45,6 @@ export class AnalyticsController {
   }
 
   @Get('/abnormal-events/:id')
-  @UseInterceptors(CacheInterceptor)
   getAbnormalEventsReport(
     @GetUser()
     reqUser: { id: string; email: string; role: string },

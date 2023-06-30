@@ -1,4 +1,4 @@
-import { Module, CacheModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   AbnormalEvent,
@@ -23,9 +23,6 @@ import { AnalyticsService } from './analytics.service';
         schema: AccessEventSchema,
       },
     ]),
-    CacheModule.register({
-      ttl: 10, //  revalidating per 10 seconds
-    }),
   ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],

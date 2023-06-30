@@ -126,9 +126,14 @@ export class AccessEventService {
   async getEventByUserId(userId: string) {
     try {
       const event = await this.eventModel
-        .find({
-          user_id: userId,
-        })
+        .find(
+          {
+            user_id: userId,
+          },
+          null,
+          { limit: 10 },
+        )
+        .sort({ accessed_time: -1 })
         .populate('organization', '_id name')
         .populate('room', '_id name')
         .select('-__v -createdAt -updatedAt -is_guest');
