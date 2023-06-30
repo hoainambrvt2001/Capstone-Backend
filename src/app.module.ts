@@ -17,6 +17,13 @@ import { EmailModule } from './services/email/email.module';
 import { StorageModule } from './services/storage/storage.module';
 import { MqttModule } from './services/mqtt/mqtt.module';
 
+// Caching configuration
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import {
+  CacheModule,
+  CacheInterceptor,
+} from '@nestjs/cache-manager';
+
 const config: ConfigService = new ConfigService();
 
 @Module({
@@ -37,6 +44,13 @@ const config: ConfigService = new ConfigService();
     EmailModule,
     StorageModule,
     MqttModule,
+    CacheModule.register({ isGlobal: true, ttl: 10000 }),
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
 })
 export class AppModule {}
